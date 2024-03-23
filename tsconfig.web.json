@@ -16,7 +16,12 @@
       "~/*": ["./*"],
       "@/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
-      "@pages/*": ["./src/pages/*"]
+      "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@layout/*": ["./src/layout/*"],
+      "@libs/*": ["./src/libs/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@routers/*": ["./src/routers/*"]
     }
   }
 }

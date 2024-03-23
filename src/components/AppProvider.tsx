@@ -45,20 +45,20 @@ export default ({ children, ...props }) => {
     let needUpdate = false
     const result: any = {}
     if (!theme || (value.theme && value.theme !== theme)) {
-      result.theme = value.theme || 'light'
-      setTheme(value.theme || 'light')
+      result.theme = value.theme || theme || 'light'
+      setTheme(value.theme || theme || 'light')
       needUpdate = true
-    } else if (!theme) {
-      result.theme = value.theme ?? 'light'
-    }
-    if (!coloring || (value.coloring && value.coloring !== coloring)) {
-      result.coloring = value.coloring || 'polar'
-      setColoring(value.coloring || 'polar')
-      needUpdate = true
-    } else if (coloring) {
-      result.coloring = value.coloring ?? 'polar'
+    } else {
+      result.theme = value.theme || theme
     }
 
+    if (!coloring || (value.coloring && value.coloring !== coloring)) {
+      result.coloring = value.coloring || coloring || 'polar'
+      setColoring(value.coloring || coloring || 'polar')
+      needUpdate = true
+    } else {
+      result.coloring = value.coloring || coloring
+    }
     if (needUpdate) {
       const token = themeMapInst[result.coloring][result.theme].token
       setCurrentToken(token)

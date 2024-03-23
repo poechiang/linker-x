@@ -1,32 +1,22 @@
-import { MoreOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import appThemes from '@assets/themes'
+import { UserAddOutlined, UserOutlined } from '@ant-design/icons'
+import TitleBar from '@components/TitleBar'
 import {
   Button,
   ConfigProvider,
-  Divider,
-  Dropdown,
   Image,
   Input,
   List,
-  MenuProps,
   theme,
   Typography,
 } from 'antd'
 import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
-import { cloneElement, useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
-import ThemeSwitch from '~/src/components/ThemeSwitch'
 import mockData from './mockData.json'
 
-import { MenuClickEventHandler } from 'rc-menu/lib/interface'
-import { ReactComponent as SystemThemeLocked } from '~/src/assets/images/system-theme-locked.svg?react'
-import { ReactComponent as SystemThemeUnlock } from '~/src/assets/images/system-theme-unlock.svg?react'
-import { ThemeColor } from '~/src/assets/themes'
-import { useApp } from '~/src/hooks/useApp'
-declare type MenuItems = MenuProps['items']
-
 const { Title } = Typography
+
 const FlexableRow = styled.div<{ height?: string }>`
   display: flex;
   align-items: stretch;
@@ -34,11 +24,6 @@ const FlexableRow = styled.div<{ height?: string }>`
   .flex-auto {
     flex: auto;
   }
-`
-const TitleBarButton = styled(Button)<{ height?: string }>`
-  padding: 0;
-  font-size: 16px;
-  width: 32px;
 `
 const contactList = mockData.map(({ records, name }) => {
   const recordHistory = (records || []).map(r => {
@@ -70,58 +55,10 @@ const contactList = mockData.map(({ records, name }) => {
 export default () => {
   const { token } = theme.useToken()
 
-  const [menuItems, setMenuItems] = useState<MenuItems>([])
-  const [flowSystemTheme, setFlowSystemTheme] = useState(false)
-
-  const app = useApp()
-  const themeMenuClickHandler = useCallback<MenuClickEventHandler>(
-    e => {
-      app.config({ coloring: e.key as ThemeColor })
-    },
-    [app]
-  )
   const [currentContact, setCurrentContact] = useState(
     contactList?.[0]?.name ?? ''
   )
 
-  const contentStyle = {
-    backgroundColor: token.colorBgElevated,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: token.boxShadowSecondary,
-  }
-
-  const menuItemsConverter = useCallback(
-    ([k, v]: any) => ({
-      key: k,
-      label: (
-        <div className="app-head-dropdown-item theme">
-          <span
-            className={'bullet'}
-            style={{
-              backgroundColor: v[app.theme || 'light']?.token.colorPrimary,
-            }}
-          ></span>
-          {`header.menu.${k}`}
-        </div>
-      ),
-    }),
-    [app]
-  )
-  useEffect(() => {
-    setMenuItems(
-      (Object.entries(appThemes) || []).map(m => menuItemsConverter(m))
-    )
-  }, [menuItemsConverter])
-
-  const themeUpdater = useCallback(({ source }) => {
-    setFlowSystemTheme(source === 'system')
-  }, [])
-  useEffect(() => {
-    window.listeners.onThemeUpdated(themeUpdater)
-    return () => {
-      window.listeners.offThemeUpdated(themeUpdater)
-    }
-  }, [])
   return (
     <FlexableRow height="100%">
       <div
@@ -205,13 +142,7 @@ export default () => {
         className="flex-auto flexable --column"
         style={{ backgroundColor: token.colorBgContainer }}
       >
-        <div
-          className="flexable --cross-center"
-          style={{
-            height: 48,
-            paddingInline: 16,
-          }}
-        >
+        <TitleBar>
           <Title
             level={5}
             style={{
@@ -220,55 +151,7 @@ export default () => {
           >
             {currentContact}
           </Title>
-          <span className="flex-auto"></span>
-
-          <Dropdown
-            className="non-draggable"
-            placement="bottomRight"
-            arrow
-            menu={{
-              items: menuItems,
-              selectedKeys: [app.coloring!],
-              onClick: themeMenuClickHandler,
-            }}
-            dropdownRender={menu => (
-              <div className="non-draggable" style={contentStyle}>
-                <div
-                  className="flexable --main-center pv-4 ph-16"
-                  style={{ width: 200 }}
-                >
-                  <span className="flex-auto" style={{ lineHeight: '26px' }}>
-                    深浅主题
-                  </span>
-                  <ThemeSwitch />
-                </div>
-
-                <Divider style={{ margin: 0 }} />
-                {cloneElement(menu as React.ReactElement, {
-                  style: { boxShadow: 'none' },
-                })}
-              </div>
-            )}
-          >
-            <TitleBarButton
-              type="text"
-              style={{ color: app.currentToken?.colorPrimary }}
-              onClick={() => {
-                window.api?.theme.toggle('system')
-              }}
-            >
-              {flowSystemTheme ? (
-                <SystemThemeLocked className="anticon" />
-              ) : (
-                <SystemThemeUnlock className="anticon" />
-              )}
-            </TitleBarButton>
-          </Dropdown>
-          <TitleBarButton type="text" className="non-draggable ml-8">
-            <MoreOutlined />
-          </TitleBarButton>
-        </div>
-        <Divider style={{ marginTop: 0 }} />
+        </TitleBar>
         <div className="non-draggable flex-auto">
           <List className="record-wrap">
             <List.Item></List.Item>

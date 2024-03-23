@@ -70,20 +70,22 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
+let cache: Record<string, string> = {}
 // theme toggle
-ipcMain.on('theme:toggle', (_, theme: 'light' | 'dark') => {
-  nativeTheme.themeSource = theme
+ipcMain.on('theme:toggle', (_, { coloring, theme }) => {
+  theme && (nativeTheme.themeSource = theme)
+  coloring && (cache.coloring = coloring)
 })
 
 ipcMain.handle('win:ready', () => ({
   theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-  coloring: 'polar',
+  coloring: cache.coloring || 'polar',
 }))
 
 nativeTheme.on('updated', e => {
   mainWindow?.webContents.send('theme:updated', {
     theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+    coloring: cache.coloring || 'polar',
     source: nativeTheme.themeSource,
   })
 })

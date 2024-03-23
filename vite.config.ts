@@ -17,7 +17,12 @@ export default defineConfig(({ command }) => {
         '~': resolve(__dirname),
         '@': resolve(__dirname, 'src'),
         '@assets': resolve(__dirname, 'src/assets'),
+        '@components': resolve(__dirname, 'src/components'),
+        '@hooks': resolve(__dirname, 'src/hooks'),
         '@pages': resolve(__dirname, 'src/pages'),
+        '@layout': resolve(__dirname, 'src/layout'),
+        '@libs': resolve(__dirname, 'src/libs'),
+        '@routers': resolve(__dirname, 'src/routers'),
       },
     },
     plugins: [

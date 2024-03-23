@@ -1,5 +1,6 @@
 import routes from '@/routers'
-import { GlobalToken, Menu, MenuProps, theme } from 'antd'
+import { useApp } from '@hooks/useApp'
+import { ConfigProvider, GlobalToken, Menu, MenuProps, theme } from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
@@ -19,30 +20,21 @@ const menuItems: MenuItem[] = routes
 
 const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
   background-color: transparent;
-  .ant-menu-item {
+  .con-com-menu-item {
     padding: 0;
     text-align: center;
-    &:hover {
-      background-color: ${props => props.token?.Menu?.colorItemBgHover};
-    }
-    &:active {
-      background-color: transparent !important;
-    }
+    margin-inline: 8px;
+    width: calc(100% - 16px);
     & > .anticon {
       display: inline-block;
-      font-size: 24px;
+      font-size: 16px;
       vertical-align: middle;
       line-height: 0;
     }
-    &-selected {
-      background-color: transparent;
-      color: ${props => props.token?.colorPrimary};
-    }
-    &-active {
-      color: ${props => props.token?.Menu?.colorItemBgActive};
-    }
   }
-  &.ant-menu-inline-collapsed .ant-menu-item .ant-menu-title-content {
+  &.con-com-menu-inline-collapsed
+    .con-com-menu-item
+    .con-com-menu-title-content {
     display: none;
   }
 `
@@ -50,6 +42,7 @@ const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
 export default () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const app = useApp()
   const { token } = theme.useToken()
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
 
@@ -63,16 +56,28 @@ export default () => {
   }, [location])
 
   return (
-    <VibrancyMenu
-      className="non-draggable"
-      onClick={onClick}
-      mode="inline"
-      selectedKeys={selectedKeys}
-      items={menuItems}
-      theme="dark"
-      token={token}
-      inlineCollapsed={true}
-      style={{ width: 70 }}
-    />
+    <ConfigProvider
+      theme={{
+        components: {
+          Menu: {
+            colorItemBgSelected:
+              app.theme === 'dark' ? '#ffffff1a' : '#0000001a',
+            colorItemTextSelected: token.colorPrimary,
+          },
+        },
+      }}
+    >
+      <VibrancyMenu
+        className="non-draggable"
+        onClick={onClick}
+        mode="inline"
+        selectedKeys={selectedKeys}
+        items={menuItems}
+        theme={app.theme}
+        token={token}
+        inlineCollapsed={true}
+        style={{ width: 70 }}
+      />
+    </ConfigProvider>
   )
 }

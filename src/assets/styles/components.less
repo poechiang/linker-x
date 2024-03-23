@@ -71,42 +71,6 @@
   }
 }
 
-@theme-switch-height: 26px;
-@theme-switch-graphy-height: 20px;
-.theme-switch-wrap {
-  .switch-wrap {
-    display: block;
-    border: none;
-    height: @theme-switch-height;
-    width: calc(@theme-switch-height * 2);
-
-    &:before {
-      width: @theme-switch-graphy-height;
-      height: @theme-switch-graphy-height;
-      top: calc((@theme-switch-height - @theme-switch-graphy-height - 2px) / 2);
-      left: calc(
-        (@theme-switch-height - @theme-switch-graphy-height - 2px) / 2
-      );
-
-      transition: all 0.4s;
-      background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
-
-      box-shadow: 0 0 5px #ff0080;
-    }
-    &.checked:before {
-      left: calc(
-        100% - (@theme-switch-height + @theme-switch-graphy-height) / 2
-      );
-      background: transparent;
-      box-shadow: inset -3px -3px 5px -2px #8983f7,
-        inset -4px -4px 0px 0px #a3daff;
-      filter: drop-shadow(0 0 2px #8983f7);
-    }
-    &.disabled {
-      box-shadow: none;
-      &:before {
-        filter: grayscale(1);
-      }
-    }
-  }
+.con-com-dropdown {
+  -webkit-app-region: no-drag;
 }

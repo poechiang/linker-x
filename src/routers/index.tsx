@@ -1,7 +1,7 @@
 import { ReadOutlined, TeamOutlined } from '@ant-design/icons'
+import Contact from '@pages/Contact'
 import { lazy } from 'react'
 import { type RouteObject } from 'react-router-dom'
-import Contact from '../pages/Contact'
 
 type AppRouteObject = RouteObject & {
   children?: AppRouteObject[]
