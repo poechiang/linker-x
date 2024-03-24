@@ -1,6 +1,7 @@
 # 🌈Linker X
 
-![image](./public/shot.png)
+![image](./public/shot-light.png)
+![image](./public/shot-dark.png)
 
 ## 🚀Feature
 
