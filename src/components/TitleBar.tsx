@@ -1,11 +1,23 @@
 import { MoreOutlined } from '@ant-design/icons'
-import { ReactComponent as EnUs } from '@assets/images/en-us.svg?react'
-import { ReactComponent as SystemThemeLocked } from '@assets/images/system-theme-locked.svg?react'
-import { ReactComponent as SystemThemeUnlock } from '@assets/images/system-theme-unlock.svg?react'
-import { ReactComponent as ZhCn } from '@assets/images/zh-cn.svg?react'
+import {
+  EnUsOutline,
+  MsgOutline,
+  SystemThemeLockedFill,
+  SystemThemeUnlockFill,
+  ZhCnOutline,
+} from '@assets/icons'
 import appThemes, { ThemeColor } from '@assets/themes'
 import { useApp } from '@hooks/useApp'
-import { Button, Divider, Dropdown, GlobalToken, MenuProps, theme } from 'antd'
+import {
+  Badge,
+  Button,
+  Divider,
+  Dropdown,
+  GlobalToken,
+  MenuProps,
+  theme,
+} from 'antd'
+import { random } from 'lodash'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import {
   cloneElement,
@@ -31,7 +43,17 @@ const CustomDropdownPanel = styled.div<{ token?: GlobalToken }>`
   box-shadow: ${props => props.token?.boxShadowSecondary};
   border-radius: ${props => props.token?.borderRadiusLG}px;
 `
-
+const StyledBadge = styled(Badge)`
+  font-size: 16px;
+  .lnk-badge-count {
+    min-width: 12px;
+    font-size: 10px;
+    border-radius: 6px;
+    height: 12px;
+    line-height: 12px;
+    padding: 0 2px;
+  }
+`
 const localeMenuItems = [
   {
     key: 'zhCN',
@@ -115,6 +137,10 @@ export default ({ children, divider, style }: TitleBarProps) => {
     }
   }, [])
 
+  const [sysMsgs, setSysMsgs] = useState<any>([])
+  const handleClick = useCallback(() => {
+    setSysMsgs([...sysMsgs, { id: random() }])
+  }, [sysMsgs])
   return (
     <div style={style}>
       <div
@@ -127,29 +153,17 @@ export default ({ children, divider, style }: TitleBarProps) => {
         {children}
         <span className="flex-auto"></span>
 
-        <Dropdown
-          className="non-draggable"
-          placement="bottomRight"
-          arrow
-          menu={{
-            items: localeDropMenuItems,
-            selectedKeys: [selectedKey],
-            onClick: menuClickHandler,
-          }}
+        <TitleBarButton
+          className="non-draggable ml-8"
+          type="text"
+          onClick={handleClick}
         >
-          <TitleBarButton
-            type="text"
-            style={{ color: app.currentToken?.colorPrimary }}
-          >
-            {selectedKey === 'zhCN' ? (
-              <ZhCn className="anticon" />
-            ) : (
-              <EnUs className="anticon" />
-            )}
-          </TitleBarButton>
-        </Dropdown>
+          <StyledBadge count={sysMsgs.length}>
+            <MsgOutline className="anticon" />
+          </StyledBadge>
+        </TitleBarButton>
         <Dropdown
-          className="non-draggable"
+          className="non-draggable ml-8"
           placement="bottomRight"
           arrow
           menu={{
@@ -165,7 +179,6 @@ export default ({ children, divider, style }: TitleBarProps) => {
               >
                 <span className="flex-auto" style={{ lineHeight: '26px' }}>
                   {t('深浅主题')}
-                  {token.borderRadiusLG}
                 </span>
                 <ThemeSwitch />
               </div>
@@ -185,9 +198,27 @@ export default ({ children, divider, style }: TitleBarProps) => {
             }}
           >
             {flowSystemTheme ? (
-              <SystemThemeLocked className="anticon" />
+              <SystemThemeLockedFill className="anticon" />
             ) : (
-              <SystemThemeUnlock className="anticon" />
+              <SystemThemeUnlockFill className="anticon" />
+            )}
+          </TitleBarButton>
+        </Dropdown>
+        <Dropdown
+          className="non-draggable ml-8"
+          placement="bottomRight"
+          arrow
+          menu={{
+            items: localeDropMenuItems,
+            selectedKeys: [selectedKey],
+            onClick: menuClickHandler,
+          }}
+        >
+          <TitleBarButton type="text">
+            {selectedKey === 'zhCN' ? (
+              <ZhCnOutline className="anticon" />
+            ) : (
+              <EnUsOutline className="anticon" />
             )}
           </TitleBarButton>
         </Dropdown>
@@ -195,7 +226,7 @@ export default ({ children, divider, style }: TitleBarProps) => {
           <MoreOutlined />
         </TitleBarButton>
       </div>
-      {divider ? <Divider style={{ marginTop: 0 }} /> : null}
+      {divider !== false ? <Divider style={{ marginTop: 0 }} /> : null}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import type { ThemeColor, ThemeKey } from '@assets/themes'
 import themeMapInst from '@assets/themes'
+import { toUnder } from '@libs/toUnder'
 import { ConfigProvider } from 'antd'
 import { AliasToken } from 'antd/es/theme/internal'
 import zhCN from 'antd/locale/zh_CN'
@@ -14,12 +15,6 @@ export declare interface IAppContext extends IAppContextData {
   config: (value: IAppContextData) => void
 }
 
-export const toUnder = (name: string) => {
-  if (typeof name !== 'string' || !name?.length) {
-    throw Error('无效的参数,参数类型无效,或为空')
-  }
-  return name.replace(/[A-Z]/g, (l, i) => (i ? '-' : '') + l.toLowerCase())
-}
 /**
  * 当前主题变量写入 :root css variable
  * @param param0
@@ -72,7 +67,7 @@ export default ({ children, ...props }) => {
   return (
     <AppContext.Provider value={{ ...props, config, currentToken }}>
       <ConfigProvider
-        prefixCls="con-com"
+        prefixCls="lnk"
         theme={themeMapInst[coloring || 'polar'][theme || 'dark']}
         locale={zhCN}
       >

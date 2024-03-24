@@ -1,5 +1,7 @@
 import { Avatar, Divider, Space, Typography } from 'antd'
+import { FC } from 'react'
 import styled from 'styled-components'
+import { ReadmeOutline } from '../assets/icons'
 import TitleBar from '../components/TitleBar'
 
 const { Title, Paragraph, Text } = Typography
@@ -14,7 +16,7 @@ const CodeBlock = styled.pre`
   background: #282c34 !important;
 `
 
-export default () => (
+const Readme: FC = () => (
   <>
     <TitleBar
       divider={false}
@@ -74,3 +76,11 @@ export default () => (
     </div>
   </>
 )
+
+export const meta = {
+  title: '待办事项',
+  name: 'ReadMe',
+  icon: <ReadmeOutline />,
+  element: <Readme />,
+}
+export default Readme

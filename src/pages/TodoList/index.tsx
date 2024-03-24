@@ -1,4 +1,5 @@
 import { UserAddOutlined, UserOutlined } from '@ant-design/icons'
+import { TodoOutline } from '@assets/icons'
 import TitleBar from '@components/TitleBar'
 import {
   Button,
@@ -11,9 +12,9 @@ import {
 } from 'antd'
 import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import styled from 'styled-components'
-import mockData from './mockData.json'
+import mockData from '../ChatRecords/mockData.json'
 
 const { Title } = Typography
 
@@ -52,7 +53,8 @@ const contactList = mockData.map(({ records, name }) => {
     content: `${type === 'to' ? '我' : name}:${content[content.length - 1]}`,
   }
 })
-export default () => {
+
+const Todo: FC = () => {
   const { token } = theme.useToken()
 
   const [currentContact, setCurrentContact] = useState(
@@ -60,10 +62,13 @@ export default () => {
   )
 
   return (
-    <FlexableRow height="100%">
+    <FlexableRow
+      height="100%"
+      style={{ backgroundColor: token.colorBgContainer }}
+    >
       <div
         className="flexable --column full-parent"
-        style={{ backgroundColor: token.colorBgContainer, width: 294 }}
+        style={{ backgroundColor: token.colorBgElevated, width: 294 }}
       >
         <div
           className="flexable non-draggable"
@@ -80,7 +85,9 @@ export default () => {
         </div>
         <ConfigProvider
           theme={{
-            token: { colorSplit: 'transparent' },
+            token: {
+              colorSplit: 'transparent',
+            },
           }}
         >
           <List
@@ -161,3 +168,11 @@ export default () => {
     </FlexableRow>
   )
 }
+
+export const meta = {
+  title: '待办事项',
+  name: 'Todo',
+  icon: <TodoOutline />,
+  element: <Todo />,
+}
+export default Todo

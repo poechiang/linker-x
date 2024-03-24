@@ -14,7 +14,7 @@
 }
 .switch-wrap {
   .wrap();
-  .con-com-icon,
+  .lnk-icon,
   &:before {
     position: absolute;
     box-sizing: border-box;
@@ -29,7 +29,7 @@
     width: @switch-graphy-height;
     height: @switch-graphy-height;
   }
-  .con-com-icon {
+  .lnk-icon {
     transition: opacity 0.2s ease-in-out;
     top: calc((@switch-height - @switch-icon-height - 2px) / 2);
     width: @switch-icon-height;
@@ -49,7 +49,7 @@
     &::before {
       left: calc(100% - @switch-graphy-height);
     }
-    .con-com-icon {
+    .lnk-icon {
       &.sun {
         opacity: 1;
       }
@@ -71,6 +71,7 @@
   }
 }
 
-.con-com-dropdown {
+.lnk-dropdown,
+.lnk-menu-submenu {
   -webkit-app-region: no-drag;
 }

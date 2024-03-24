@@ -1,4 +1,4 @@
-import routes from '@/routers'
+import routeLoader from '@/routers/loader'
 import SideMenu from '@components/SideMenu'
 import { useApp } from '@hooks/useApp'
 import { Spin } from 'antd'
@@ -32,7 +32,7 @@ export default () => {
             </div>
           }
         >
-          {useRoutes(routes as RouteObject[])}
+          {useRoutes(routeLoader() as RouteObject[])}
         </Suspense>
       </div>
     </>
