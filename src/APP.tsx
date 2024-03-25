@@ -1,10 +1,11 @@
-import routes from './routers';
+import Reset from './assets/styles/reset';
+import AppLayout from './layout/AppLayout';
 
 function App(): JSX.Element {
   return (
     <>
-      <h1>Hello, World</h1>
-      {routes}
+      <AppLayout />
+      <Reset />
     </>
   );
 }
