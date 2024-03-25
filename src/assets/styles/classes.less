@@ -1,0 +1,162 @@
+@alignItems: baseline, center, end, flex-end, flex-start, normal, safe, self-end,
+  self-start, start, stretch, unsafe, inherit, initial, unset;
+
+@justifyContent: baseline, center, end, flex-end, flex-start, normal, safe, left,
+  right, space-around, space-between, space-evenly, start, stretch, unsafe,
+  inherit, initial, unset;
+@flexdirections:row, column,row-reverse,column-reverse;
+@flexes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  21, 22, 23, 24, auto, content, none, inherit, initial, unset;
+.flexable {
+  display: flex;
+  each(@flexdirections,{
+        &.--@{value}{
+            flex-direction: @value;
+        }
+    })
+    each(@justifyContent,{
+        &.--main-@{value} {
+            justify-content: @value;
+        }
+    });
+
+  each(@alignItems,{
+        &.--cross-@{value} {
+            align-items: @value;
+        }
+    });
+
+  each(@flexes,{
+        .flex-@{value} {
+            flex: @value;
+        }
+    });
+}
+
+@marginPaddings: 0, 1, 2, 4, 5, 8, 10, 12, 15, 16, 20, 24, 25, 28, 30, 32, 35,
+  36, 40, 44, 45, 48, 50, 52, 55, 56, 60, 64;
+@presetsMarginPaddings: {
+  sm: 4;
+  md: 8;
+  lg: 16;
+};
+@mapProperties: {
+  m: margin;
+  p: padding;
+};
+@edges: {
+  h: inline;
+  v: block;
+  l: left;
+  t: top;
+  r: right;
+  b: bottom;
+};
+
+each(@marginPaddings, .(@value) {
+  each(@mapProperties, .(@p, @k) {
+    .@{k}-@{value}{
+      @{p}:~"@{value}px";
+    }
+  });
+});
+
+each(@marginPaddings, .(@value) {
+  each(@mapProperties, .(@p, @k) {
+    .@{k}a-@{value}{
+      @{p}: ~"@{value}px auto";
+    }
+  });
+});
+
+each(@marginPaddings, .(@value) {
+  each(@mapProperties, .(@p, @k) {
+    each(@edges, .(@pe, @e) {
+      .@{k}@{e}-@{value}{
+        @{p}-@{pe}:~"@{value}px";
+      }
+    });
+  });
+});
+
+each(@presetsMarginPaddings, .( @value,@key) {
+  each(@mapProperties, .(@p, @k) {
+    .@{k}-@{key}{
+      @{p}:~"@{value}px";
+    }
+  });
+});
+each(@presetsMarginPaddings, .( @value,@key) {
+  each(@mapProperties, .(@p, @k) {
+
+    .@{k}a-@{key}{
+      @{p}: ~"@{value}px auto";
+    }
+  });
+});
+each(@presetsMarginPaddings, .( @value,@key) {
+  each(@mapProperties, .(@p, @k) {
+    each(@edges, .(@pe, @e) {
+      .@{k}@{e}-@{key}{
+        @{p}-@{pe}:~"@{value}px";
+      }
+    });
+  });
+});
+
+@textAligns: center, end, justify, left, right, start, inherit, initial, unset;
+each(@textAligns,{
+.hor-@{value} {
+    text-align: @value;
+
+}
+});
+
+@positions:static, relative, absolute, fixed;
+
+each(@positions,{
+.pos-@{value} {
+    position: @value;
+}
+});
+
+.full-height {
+  height: 100vh;
+}
+
+.full-parent {
+  height: 100%;
+}
+
+.full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+@listStyles: armenian, circle, decimal, decimal-leading-zero, disc, georgian,
+  hebrew, hiragana, hiragana-iroha, katakana, katakana-iroha, lower-alpha,
+  lower-greek, lower-latin, lower-roman, upper-alpha, upper-greek, upper-latin,
+  upper-roman, none, square, circle, inherit, outside;
+
+ul,
+dl {
+  each(@listStyles,{
+    &.ls-@{value}{
+      list-style-type: @value;
+      > li {
+        list-style-type: @value;
+      }
+    }
+  });
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+.non-draggable {
+  -webkit-app-region: no-drag;
+}
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

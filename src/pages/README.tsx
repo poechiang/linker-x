@@ -1,29 +1,22 @@
-import { Avatar, Divider, Space, Typography } from 'antd';
-import styled from 'styled-components';
+import { Avatar, Divider, Space, Typography } from 'antd'
+import styled from 'styled-components'
 
-const { Title, Paragraph, Text } = Typography;
-
-const Ul = styled.ul`
-  list-style: circle;
-  li {
-    list-style: circle;
-  }
-`;
+const { Title, Paragraph, Text } = Typography
 
 const Div = styled.div`
   display: flex;
   align-items: center;
-`;
+`
 
 const CodeBlock = styled.pre`
   color: #cccccc !important;
   background: #282c34 !important;
-`;
+`
 
-function Home(): JSX.Element {
-  return (
-    <Typography style={{ overflowY: 'scroll' }}>
-      <Title>🎉Electron-react-starter</Title>
+export default () => (
+  <div className="m-20 mt-28" style={{ height: 'calc(100% - 48px)' }}>
+    <Typography className="non-draggable flexable --column full-parent">
+      <Title>🎉 Linker X</Title>
       <Paragraph>
         <Space size="middle">
           <Div>
@@ -50,27 +43,27 @@ function Home(): JSX.Element {
         </Space>
       </Paragraph>
       <Divider />
-      <Title level={2}>🚀Feature</Title>
-      <Paragraph>
-        <Ul>
-          <li>Develop by react and build by vite.</li>
-          <li>Format code style by prettier and eslint.</li>
-          <li>Configured electron-builder and husky and commitlint.</li>
-        </Ul>
-      </Paragraph>
-      <Title level={2}>📖Usage</Title>
-      <Title level={3}>Dev</Title>
-      <Paragraph>
-        Install
-        <CodeBlock>yarn</CodeBlock>
-        Start
-        <CodeBlock>yarn dev</CodeBlock>
-      </Paragraph>
-      <Title level={4}>Package</Title>
-      <CodeBlock>yarn build:[platform]</CodeBlock>
-      <Paragraph></Paragraph>
+      <div className="flex-auto" style={{ height: 0, overflowY: 'auto' }}>
+        <Title level={2}>🚀 Feature</Title>
+        <Paragraph>
+          <ul className="ls-circle">
+            <li>Develop by react and build by vite.</li>
+            <li>Format code style by prettier and eslint.</li>
+            <li>Configured electron-builder and husky and commitlint.</li>
+          </ul>
+        </Paragraph>
+        <Title level={2}>📖 Usage</Title>
+        <Title level={3}>Dev</Title>
+        <Paragraph>
+          Install
+          <CodeBlock>yarn</CodeBlock>
+          Start
+          <CodeBlock>yarn dev</CodeBlock>
+        </Paragraph>
+        <Title level={4}>Package</Title>
+        <CodeBlock>yarn build:[platform]</CodeBlock>
+        <Paragraph></Paragraph>
+      </div>
     </Typography>
-  );
-}
-
-export default Home;
+  </div>
+)

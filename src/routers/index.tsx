@@ -1,47 +1,40 @@
-import {
-  ActionFunction,
-  LoaderFunction,
-  Navigate,
-  ShouldRevalidateFunction,
-} from 'react-router-dom';
-import { ReadOutlined } from '@ant-design/icons';
-import { lazy } from 'react';
-interface RouteObject {
-  path?: string;
-  index?: boolean;
-  children?: RouteObject[];
-  caseSensitive?: boolean;
-  id?: string;
-  loader?: LoaderFunction;
-  action?: ActionFunction;
-  element?: React.ReactNode | null;
-  errorElement?: React.ReactNode | null;
-  shouldRevalidate?: ShouldRevalidateFunction;
+import { ReadOutlined, TeamOutlined } from '@ant-design/icons'
+import { lazy } from 'react'
+import { type RouteObject } from 'react-router-dom'
+import Contact from '../pages/Contact'
+
+type AppRouteObject = RouteObject & {
+  children?: AppRouteObject[]
   meta?: {
-    name?: string;
-    icon?: React.ReactNode;
-    hidden?: boolean | false;
-  };
+    name?: string
+    label?: string
+    icon?: React.ReactNode
+    hidden?: boolean | false
+  }
 }
 
-const README = lazy(() => import('@renderer/pages/README'));
+const ReadMe = lazy(() => import('@pages/README'))
 
-const routes: RouteObject[] = [
+const routes: AppRouteObject[] = [
   {
     index: true,
-    element: <Navigate replace to="/readme" />,
+    path: '/',
+    element: <Contact />,
     meta: {
-      hidden: true,
+      name: 'Contact',
+      label: '联系人',
+      icon: <TeamOutlined />,
     },
   },
   {
     path: '/readme',
-    element: <README />,
+    element: <ReadMe />,
     meta: {
-      name: 'README',
+      name: 'ReadMe',
+      label: '自述',
       icon: <ReadOutlined />,
     },
   },
-];
+]
 
-export default routes;
+export default routes

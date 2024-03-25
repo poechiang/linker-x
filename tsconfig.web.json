@@ -1,19 +1,22 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/env.d.ts",
+    "src/types/*.d.ts",
     "src/**/*",
     "src/**/*.tsx",
-    "electron/preload/*.d.ts"
+    "src/**/*.json",
+    "src/**/*.svg"
   ],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "types": ["node", "vite/client", "@electron-toolkit/preload"],
     "paths": {
-      "@renderer/*": [
-        "src/*"
-      ]
+      "~/*": ["./*"],
+      "@/*": ["./src/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@pages/*": ["./src/pages/*"]
     }
   }
 }

@@ -1,13 +1,23 @@
-import Reset from './assets/styles/reset';
-import AppLayout from './layout/AppLayout';
-
-function App(): JSX.Element {
+import '@assets/styles/index.less'
+import useMessage from 'antd/es/message/useMessage'
+import useModal from 'antd/es/modal/useModal'
+import useNotification from 'antd/es/notification/useNotification'
+import { HashRouter } from 'react-router-dom'
+import AppProvider from './components/AppProvider'
+import AppFrame from './layout/AppFrame'
+export default (props: any) => {
+  const [_1, messageHolder] = useMessage()
+  const [_2, notificationHolder] = useNotification()
+  const [_3, modalHolder] = useModal()
   return (
-    <>
-      <AppLayout />
-      <Reset />
-    </>
-  );
-}
+    <AppProvider {...props}>
+      {messageHolder}
+      {notificationHolder}
+      {modalHolder}
 
-export default App;
+      <HashRouter>
+        <AppFrame />
+      </HashRouter>
+    </AppProvider>
+  )
+}

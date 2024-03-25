@@ -1,0 +1,112 @@
+@switch-height: 24px;
+@switch-graphy-height: 22px;
+@switch-icon-height: 16px;
+@switch-border-radius: calc(@switch-height / 2);
+
+.wrap() {
+  cursor: pointer;
+  border: 1px solid @colorSwitchBorder;
+  height: @switch-height;
+  width: calc(@switch-height * 2);
+  background-color: @colorSwitchBackground;
+  border-radius: @switch-border-radius;
+  position: relative;
+}
+.switch-wrap {
+  .wrap();
+  .con-com-icon,
+  &:before {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  &:before {
+    content: '';
+    background-color: #fff;
+    top: 0;
+    left: 0;
+    transition: left 0.2s 0.1s ease-in-out;
+    width: @switch-graphy-height;
+    height: @switch-graphy-height;
+  }
+  .con-com-icon {
+    transition: opacity 0.2s ease-in-out;
+    top: calc((@switch-height - @switch-icon-height - 2px) / 2);
+    width: @switch-icon-height;
+    height: @switch-icon-height;
+    &.sun {
+      left: calc((@switch-height - @switch-icon-height - 2px) / 2);
+      opacity: 0;
+    }
+    &.moon {
+      right: calc((@switch-height - @switch-icon-height - 2px) / 2);
+      opacity: 1;
+    }
+  }
+  &.locked,
+  &.checked {
+    background-color: @colorPrimary;
+    &::before {
+      left: calc(100% - @switch-graphy-height);
+    }
+    .con-com-icon {
+      &.sun {
+        opacity: 1;
+      }
+      &.moon {
+        opacity: 0;
+      }
+    }
+  }
+  &:hover::before {
+    box-shadow: 0 0 3px @colorSwitchGraphyShadow;
+  }
+  &.disabled {
+    cursor: not-allowed;
+
+    background-color: #bfbfbf !important;
+    &.checked {
+      background-color: #96c480 !important;
+    }
+  }
+}
+
+@theme-switch-height: 26px;
+@theme-switch-graphy-height: 20px;
+.theme-switch-wrap {
+  .switch-wrap {
+    display: block;
+    border: none;
+    height: @theme-switch-height;
+    width: calc(@theme-switch-height * 2);
+
+    &:before {
+      width: @theme-switch-graphy-height;
+      height: @theme-switch-graphy-height;
+      top: calc((@theme-switch-height - @theme-switch-graphy-height - 2px) / 2);
+      left: calc(
+        (@theme-switch-height - @theme-switch-graphy-height - 2px) / 2
+      );
+
+      transition: all 0.4s;
+      background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+
+      box-shadow: 0 0 5px #ff0080;
+    }
+    &.checked:before {
+      left: calc(
+        100% - (@theme-switch-height + @theme-switch-graphy-height) / 2
+      );
+      background: transparent;
+      box-shadow: inset -3px -3px 5px -2px #8983f7,
+        inset -4px -4px 0px 0px #a3daff;
+      filter: drop-shadow(0 0 2px #8983f7);
+    }
+    &.disabled {
+      box-shadow: none;
+      &:before {
+        filter: grayscale(1);
+      }
+    }
+  }
+}

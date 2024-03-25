@@ -1,25 +1,31 @@
-import react from '@vitejs/plugin-react';
-import electron from 'vite-electron-plugin';
-import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin';
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-import svgr from 'vite-plugin-svgr';
-import renderer from 'vite-plugin-electron-renderer';
+import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
+import electron from 'vite-electron-plugin'
+import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin'
+import renderer from 'vite-plugin-electron-renderer'
+import svgr from 'vite-plugin-svgr'
 
 export default defineConfig(({ command }) => {
-  const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG;
+  const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG
   return {
     build: {
       outDir: 'dist-electron/renderer',
     },
     resolve: {
       alias: {
-        '@renderer': resolve(__dirname, 'src'),
+        '~': resolve(__dirname),
+        '@': resolve(__dirname, 'src'),
+        '@assets': resolve(__dirname, 'src/assets'),
+        '@pages': resolve(__dirname, 'src/pages'),
       },
     },
     plugins: [
       react(),
-      svgr(),
+      svgr({
+        // A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should include.
+        include: ['**/*.svg?react'],
+      }),
       electron({
         include: ['electron'],
         transformOptions: {
@@ -45,5 +51,5 @@ export default defineConfig(({ command }) => {
         nodeIntegration: false,
       }),
     ],
-  };
-});
+  }
+})
