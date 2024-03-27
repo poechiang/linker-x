@@ -1,6 +1,6 @@
 import type { ThemeColor, ThemeKey } from '@assets/themes'
 import themeMapInst from '@assets/themes'
-import { toUnder } from '@libs/toUnder'
+import { hyphen } from '@poech/camel-hump-under'
 import { ConfigProvider } from 'antd'
 import { AliasToken } from 'antd/es/theme/internal'
 import zhCN from 'antd/locale/zh_CN'
@@ -9,7 +9,6 @@ import { createContext, useEffect, useState } from 'react'
 export declare interface IAppContextData {
   coloring?: ThemeColor
   theme?: ThemeKey
-  currentToken?: Partial<AliasToken>
 }
 export declare interface IAppContext extends IAppContextData {
   config: (value: IAppContextData) => void
@@ -24,18 +23,15 @@ const updateThemeVariable = debounce((token: Partial<AliasToken>) => {
   const rootElement = document.querySelector(':root') as HTMLHtmlElement
 
   Object.entries(token || {}).forEach(([k, v]) => {
-    rootElement.style.setProperty(`--${toUnder(k)}`, v?.toString() || '')
+    rootElement.style.setProperty(`--${hyphen(k)}`, v?.toString() || '')
   })
 }, 100)
 
 export const AppContext = createContext<IAppContext>(null!)
 
 export default ({ children, ...props }) => {
-  // const [themeMapInst, setThemeMapInst] = useState<any>(null)
   const [theme, setTheme] = useState<ThemeKey>()
   const [coloring, setColoring] = useState<ThemeColor>()
-  const [currentToken, setCurrentToken] = useState<Partial<AliasToken>>()
-
   const config = (value: IAppContextData) => {
     let needUpdate = false
     const result: any = {}
@@ -55,20 +51,20 @@ export default ({ children, ...props }) => {
       result.coloring = value.coloring || coloring
     }
     if (needUpdate) {
-      const token = themeMapInst[result.coloring][result.theme].token
-      setCurrentToken(token)
+      const { token } = themeMapInst[result.coloring][result.theme]
+
       updateThemeVariable(token)
     }
   }
 
   useEffect(() => {
     config(props)
-  }, [])
+  }, [props])
   return (
-    <AppContext.Provider value={{ ...props, config, currentToken }}>
+    <AppContext.Provider value={{ ...props, config }}>
       <ConfigProvider
         prefixCls="lnk"
-        theme={themeMapInst[coloring || 'polar'][theme || 'dark']}
+        theme={themeMapInst[coloring || 'polar'][theme || 'light']}
         locale={zhCN}
       >
         {children}

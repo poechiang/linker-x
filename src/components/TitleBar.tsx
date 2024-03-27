@@ -19,23 +19,39 @@ import {
 } from 'antd'
 import { random } from 'lodash'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
-import {
-  cloneElement,
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react'
+import { cloneElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { StyledFlexableRow } from './StyleComponnets'
 import ThemeSwitch from './ThemeSwitch'
 
 declare type MenuItems = MenuProps['items']
 
-const TitleBarButton = styled(Button)<{ height?: string }>`
+export const TitleBarButton = styled(Button)<{
+  token?: GlobalToken
+  height?: string
+  checked?: boolean
+}>`
   padding: 0;
   font-size: 16px;
   width: 32px;
+  pointer-events: auto;
+  background-color: ${props =>
+    props.checked ? props.token?.colorBgMask ?? 'initial' : 'transparent'};
+  color: ${props =>
+    props.checked ? props.token?.colorText ?? 'initial' : 'initial'};
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    font-style: normal;
+    line-height: 0;
+    text-align: center;
+    text-transform: none;
+    vertical-align: -0.125em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
 `
 
 const CustomDropdownPanel = styled.div<{ token?: GlobalToken }>`
@@ -71,18 +87,29 @@ const menuItemConverter = (m: any) => ({
 
 const localeDropMenuItems = localeMenuItems.map(menuItemConverter)
 
-export type TitleBarProps = Record<string, any> & {
+export type TitleBarProps = FCChildrenProps & {
   divider?: boolean
-  children?: any
-  style?: CSSProperties
+  avoidMargin?: number
+  moreHolding?: boolean
+  onMoreButtonClick?: () => void
 }
-export default ({ children, divider, style }: TitleBarProps) => {
+export default ({
+  children,
+  divider,
+  style,
+  moreHolding,
+  ...props
+}: TitleBarProps) => {
   const app = useApp()
   const { token } = theme.useToken()
+  const { i18n } = useTranslation()
+
   const [flowSystemTheme, setFlowSystemTheme] = useState(false)
   const [currentColoring, setCurrentColoring] = useState(app.coloring)
   const [menuItems, setMenuItems] = useState<MenuItems>([])
 
+  const [selectedKey, setSelectedKey] = useState('zhCN')
+  const [sysMsgs, setSysMsgs] = useState<any>([])
   const { t } = useTranslation()
 
   const menuItemsConverter = useCallback(
@@ -103,16 +130,14 @@ export default ({ children, divider, style }: TitleBarProps) => {
     [app]
   )
 
-  const { i18n } = useTranslation()
-  const [selectedKey, setSelectedKey] = useState('zhCN')
-  const menuClickHandler = useCallback<MenuClickEventHandler>(
+  const handleLocaleMenuClick = useCallback<MenuClickEventHandler>(
     async e => {
       i18n.changeLanguage(e.key)
       setSelectedKey(e.key)
     },
     [i18n]
   )
-  const themeMenuClickHandler = useCallback<MenuClickEventHandler>(
+  const handleThemeMenuClick = useCallback<MenuClickEventHandler>(
     e => {
       setCurrentColoring(e.key as ThemeColor)
       app.config({ coloring: e.key as ThemeColor })
@@ -137,96 +162,105 @@ export default ({ children, divider, style }: TitleBarProps) => {
     }
   }, [])
 
-  const [sysMsgs, setSysMsgs] = useState<any>([])
   const handleClick = useCallback(() => {
     setSysMsgs([...sysMsgs, { id: random() }])
   }, [sysMsgs])
   return (
-    <div style={style}>
+    <StyledFlexableRow
+      height="48px"
+      className="title-bar flexable --cross-center "
+      style={{
+        zIndex: 9999,
+        pointerEvents: 'none',
+        paddingInline: 16,
+        borderBottom:
+          divider !== false ? `1px solid ${token.colorSplit}` : 'none',
+        ...style,
+      }}
+    >
       <div
-        className="flexable --cross-center"
         style={{
-          height: 48,
-          paddingInline: 16,
+          transition: 'all .3s ease-in-out',
+          paddingLeft: props?.avoidMargin ?? 0,
+        }}
+      ></div>
+      {children}
+      <span className="flex-auto"></span>
+
+      <TitleBarButton
+        className="non-draggable ml-8"
+        type="text"
+        onClick={handleClick}
+      >
+        <StyledBadge count={sysMsgs.length}>
+          <MsgOutline />
+        </StyledBadge>
+      </TitleBarButton>
+      <Dropdown
+        className="non-draggable ml-8"
+        placement="bottomRight"
+        arrow
+        menu={{
+          items: menuItems,
+          selectedKeys: [currentColoring!],
+          onClick: handleThemeMenuClick,
+        }}
+        dropdownRender={menu => (
+          <CustomDropdownPanel className="non-draggable" token={token}>
+            <div
+              className="flexable --main-center pv-4 ph-16"
+              style={{ width: 200 }}
+            >
+              <span className="flex-auto" style={{ lineHeight: '26px' }}>
+                {t('深浅主题')}
+              </span>
+              <ThemeSwitch />
+            </div>
+
+            <Divider style={{ margin: 0 }} />
+            {cloneElement(menu as React.ReactElement, {
+              style: { boxShadow: 'none' },
+            })}
+          </CustomDropdownPanel>
+        )}
+      >
+        <TitleBarButton
+          type="text"
+          style={{ color: token?.colorPrimary }}
+          onClick={() => {
+            window.api?.theme.toggle({ theme: 'system' })
+          }}
+        >
+          {flowSystemTheme ? (
+            <SystemThemeLockedFill />
+          ) : (
+            <SystemThemeUnlockFill />
+          )}
+        </TitleBarButton>
+      </Dropdown>
+      <Dropdown
+        className="non-draggable ml-8"
+        placement="bottomRight"
+        arrow
+        menu={{
+          items: localeDropMenuItems,
+          selectedKeys: [selectedKey],
+          onClick: handleLocaleMenuClick,
         }}
       >
-        {children}
-        <span className="flex-auto"></span>
-
-        <TitleBarButton
-          className="non-draggable ml-8"
-          type="text"
-          onClick={handleClick}
-        >
-          <StyledBadge count={sysMsgs.length}>
-            <MsgOutline className="anticon" />
-          </StyledBadge>
+        <TitleBarButton type="text" token={token}>
+          {selectedKey === 'zhCN' ? <ZhCnOutline /> : <EnUsOutline />}
         </TitleBarButton>
-        <Dropdown
-          className="non-draggable ml-8"
-          placement="bottomRight"
-          arrow
-          menu={{
-            items: menuItems,
-            selectedKeys: [currentColoring!],
-            onClick: themeMenuClickHandler,
-          }}
-          dropdownRender={menu => (
-            <CustomDropdownPanel className="non-draggable" token={token}>
-              <div
-                className="flexable --main-center pv-4 ph-16"
-                style={{ width: 200 }}
-              >
-                <span className="flex-auto" style={{ lineHeight: '26px' }}>
-                  {t('深浅主题')}
-                </span>
-                <ThemeSwitch />
-              </div>
-
-              <Divider style={{ margin: 0 }} />
-              {cloneElement(menu as React.ReactElement, {
-                style: { boxShadow: 'none' },
-              })}
-            </CustomDropdownPanel>
-          )}
-        >
-          <TitleBarButton
-            type="text"
-            style={{ color: app.currentToken?.colorPrimary }}
-            onClick={() => {
-              window.api?.theme.toggle({ theme: 'system' })
-            }}
-          >
-            {flowSystemTheme ? (
-              <SystemThemeLockedFill className="anticon" />
-            ) : (
-              <SystemThemeUnlockFill className="anticon" />
-            )}
-          </TitleBarButton>
-        </Dropdown>
-        <Dropdown
-          className="non-draggable ml-8"
-          placement="bottomRight"
-          arrow
-          menu={{
-            items: localeDropMenuItems,
-            selectedKeys: [selectedKey],
-            onClick: menuClickHandler,
-          }}
-        >
-          <TitleBarButton type="text">
-            {selectedKey === 'zhCN' ? (
-              <ZhCnOutline className="anticon" />
-            ) : (
-              <EnUsOutline className="anticon" />
-            )}
-          </TitleBarButton>
-        </Dropdown>
-        <TitleBarButton type="text" className="non-draggable ml-8">
-          <MoreOutlined />
-        </TitleBarButton>
-      </div>
-      {divider !== false ? <Divider style={{ marginTop: 0 }} /> : null}
-    </div>
+      </Dropdown>
+      <TitleBarButton
+        type="text"
+        className="non-draggable ml-8"
+        token={token}
+        checked={moreHolding}
+        onClick={props.onMoreButtonClick}
+      >
+        <MoreOutlined />
+      </TitleBarButton>
+    </StyledFlexableRow>
   )
 }

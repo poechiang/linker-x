@@ -13,19 +13,13 @@ import {
 import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
 import { FC, useState } from 'react'
-import styled from 'styled-components'
+
+import { StyledFlexableRow } from '@components/StyleComponnets'
+import { useTranslation } from 'react-i18next'
 import mockData from '../ChatRecords/mockData.json'
 
 const { Title } = Typography
 
-const FlexableRow = styled.div<{ height?: string }>`
-  display: flex;
-  align-items: stretch;
-  height: ${props => props.height};
-  .flex-auto {
-    flex: auto;
-  }
-`
 const contactList = mockData.map(({ records, name }) => {
   const recordHistory = (records || []).map(r => {
     const lines: string[] = r?.content.split('\n')
@@ -46,23 +40,24 @@ const contactList = mockData.map(({ records, name }) => {
   return {
     sendTime,
     name,
+    type,
     recordHistory,
     avatar: `https://picsum.photos/200?random=${(
       Math.random() * 100000
     ).toFixed()}`,
-    content: `${type === 'to' ? '我' : name}:${content[content.length - 1]}`,
+    content: content[content.length - 1],
   }
 })
 
 const Todo: FC = () => {
   const { token } = theme.useToken()
-
+  const { t } = useTranslation()
   const [currentContact, setCurrentContact] = useState(
     contactList?.[0]?.name ?? ''
   )
 
   return (
-    <FlexableRow
+    <StyledFlexableRow
       height="100%"
       style={{ backgroundColor: token.colorBgContainer }}
     >
@@ -137,7 +132,7 @@ const Todo: FC = () => {
                       color: '#737373',
                     }}
                   >
-                    {item.content}
+                    {item.type === 'to' ? t('我') : item.name}:22{item.content}
                   </p>
                 </div>
               </List.Item>
@@ -165,11 +160,11 @@ const Todo: FC = () => {
           </List>
         </div>
       </div>
-    </FlexableRow>
+    </StyledFlexableRow>
   )
 }
 
-export const meta = {
+export const routeMeta = {
   title: '待办事项',
   name: 'Todo',
   icon: <TodoOutline />,

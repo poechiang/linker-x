@@ -77,7 +77,7 @@ const Readme: FC = () => (
   </>
 )
 
-export const meta = {
+export const routeMeta = {
   title: '待办事项',
   name: 'ReadMe',
   icon: <ReadmeOutline />,

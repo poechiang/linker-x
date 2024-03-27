@@ -1084,6 +1084,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@poech/camel-hump-under@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@poech/camel-hump-under@npm:1.1.0"
+  checksum: ae70ce2b94769f590a198c219f11035ca766c576be01fc2100ce08695f03cc208edeb69fc457edf57ccf1c5bb93ad577783e8deea3d58f3b5d4975eb55b1e9c0
+  languageName: node
+  linkType: hard
+
 "@rc-component/context@npm:^1.3.0":
   version: 1.3.0
   resolution: "@rc-component/context@npm:1.3.0"
@@ -5393,6 +5400,7 @@ __metadata:
     "@electron-toolkit/tsconfig": "npm:^1.0.1"
     "@electron-toolkit/utils": "npm:^1.0.2"
     "@electron/notarize": "npm:^1.2.3"
+    "@poech/camel-hump-under": "npm:^1.1.0"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^18.14.6"
     "@types/react": "npm:^18.0.28"

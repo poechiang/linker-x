@@ -1,4 +1,3 @@
-import { toUnder } from '@libs/toUnder'
 import { createElement, lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 
@@ -10,16 +9,18 @@ export default () => {
       ['@pages/**/*.tsx', '@pages/**/index.ts'],
       {
         eager: true,
-        import: 'meta',
+        import: 'routeMeta',
       }
     ) as Record<string, PageMeta>
-    console.log(pageMetas, Object.entries(pageMetas))
     const pages = Object.entries(pageMetas).map(([file, meta]) => {
+      if (!meta) return null
       const path = file
         .replace('/src/pages/', '/')
         .replace(/(\/index)?.ts(x?)$/, '')
         .split('/')
-        .map(toUnder)
+        .map(f =>
+          f.replace(/[A-Z]/g, (l, i) => (i ? '-' : '') + l.toLowerCase())
+        )
         .join('/')
       if (meta.index) {
         indexRouter = {

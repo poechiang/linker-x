@@ -1,4 +1,4 @@
-import routeLoader from '@/routers/loader'
+import { sideMenuItems } from '@/routers/navMenu'
 import {
   AppOutline,
   MobileOutline,
@@ -12,12 +12,6 @@ import styled from 'styled-components'
 
 type MenuItem = MenuProps['items']
 
-// ?.filter(item => !!item?.meta && !item.meta.hidden)
-// .map(({ path, meta }) => ({
-//   ...meta,
-//   title: '',
-//   key: path!,
-// }))
 const extraMenuItems: MenuItem = [
   {
     label: 'Navigation One',
@@ -110,7 +104,7 @@ export default () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
 
   // from routes
-  const [routerMenuItems, setRouterMenuItems] = useState<MenuItem>([])
+  const [routerMenuItems] = useState<MenuItem>(sideMenuItems)
 
   const onClick: MenuProps['onClick'] = e => {
     navigate(e.key)
@@ -121,17 +115,6 @@ export default () => {
     console.log('location', location)
     setSelectedKeys([location.pathname])
   }, [location])
-  useEffect(() => {
-    setRouterMenuItems(
-      routeLoader()
-        .filter(({ menu }) => menu !== false)
-        .map(route => ({
-          // ...route,
-          icon: route.icon,
-          key: route.path!,
-        }))
-    )
-  }, [])
 
   return (
     <div className="flexable --column --cross-center full-parent">

@@ -11,6 +11,14 @@ declare interface Window {
   listeners: Record<string, (callback?) => any | void>
 }
 
+declare type FCProps = {
+  classes?: Record<string, boolean>
+  style?: React.CSSProperties
+}
+declare type FCChildrenProps = FCProps & {
+  children?: React.ReactNode
+}
+
 // type ReactNode = ReactElement | string | number | ReactFragment | ReactPortal | boolean | null | undefined;
 declare interface PageMeta {
   index?: boolean
@@ -23,4 +31,16 @@ declare interface PageMeta {
 declare interface PageRouter extends PageMeta {
   path: string
   menu?: boolean
+}
+
+declare interface IContact {
+  sendTime?: string
+  name?: string
+  type?: string
+  recordHistory?: stirng[]
+  avatar?: string
+  content?: string | string[]
+  state?: 'offline' | 'online'
+  gender?: 'female' | 'male'
+  favorited?: boolean
 }

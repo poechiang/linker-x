@@ -1,5 +1,14 @@
 import { UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import { ChatOutline } from '@assets/icons'
+import {
+  ChatOutline,
+  FavoriteMulti,
+  FemaleOfflineMulti,
+  FemaleOnlineMulti,
+  MaleOfflineMulti,
+  MaleOnlineMulti,
+} from '@assets/icons'
+import ExtraDrawer from '@components/ExtraDrawer'
+import { StyledFlexableRow } from '@components/StyleComponnets'
 import TitleBar from '@components/TitleBar'
 import {
   Button,
@@ -12,21 +21,14 @@ import {
 } from 'antd'
 import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
-import { FC, useState } from 'react'
-import styled from 'styled-components'
+import { random } from 'lodash'
+import { FC, useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import mockData from './mockData.json'
 
 const { Title } = Typography
 
-const FlexableRow = styled.div<{ height?: string }>`
-  display: flex;
-  align-items: stretch;
-  height: ${props => props.height};
-  .flex-auto {
-    flex: auto;
-  }
-`
-const contactList = mockData.map(({ records, name }) => {
+const contactList: IContact[] = mockData.map(({ records, name }) => {
   const recordHistory = (records || []).map(r => {
     const lines: string[] = r?.content.split('\n')
     const seconds = Date.now() / 1000 - r?.timestamp
@@ -46,22 +48,35 @@ const contactList = mockData.map(({ records, name }) => {
   return {
     sendTime,
     name,
+    type,
     recordHistory,
     avatar: `https://picsum.photos/200?random=${(
       Math.random() * 100000
     ).toFixed()}`,
-    content: `${type === 'to' ? '我' : name}:${content[content.length - 1]}`,
+    content: content[content.length - 1],
+    gender: ['female', 'male'][random(0, 1, false)],
+    state: ['offline', 'online'][random(0, 1, false)],
+    favorited: [true, false][random(0, 1, false)],
   }
-})
+}) as any
 const ChartRecord: FC = () => {
   const { token } = theme.useToken()
-
-  const [currentContact, setCurrentContact] = useState(
-    contactList?.[0]?.name ?? ''
+  const { t } = useTranslation()
+  const [currentContact, setCurrentContact] = useState(contactList?.[0])
+  const [profilePanelVisible, setProfilePanelVisible] = useState(true)
+  const [profilePanelExpanded, setProfilePanelExpanded] = useState(false)
+  const closeProfilePanel = useCallback(() => setProfilePanelVisible(false), [])
+  const handleMoreButtonClick = useCallback(
+    () => setProfilePanelVisible(true),
+    []
   )
 
+  const handleProfilePanelExpandedChange = useCallback(
+    (pinned: boolean) => setProfilePanelExpanded(pinned),
+    []
+  )
   return (
-    <FlexableRow
+    <StyledFlexableRow
       height="100%"
       style={{ backgroundColor: token.colorBgContainer }}
     >
@@ -97,17 +112,19 @@ const ChartRecord: FC = () => {
             renderItem={item => (
               <List.Item
                 className={
-                  currentContact === item.name ? 'active flexable' : 'flexable'
+                  currentContact.name === item.name
+                    ? 'active flexable'
+                    : 'flexable'
                 }
                 style={{
                   paddingInline: 16,
                   backgroundColor:
-                    currentContact === item.name
+                    currentContact.name === item.name
                       ? token.colorFillSecondary
                       : 'transparent',
                 }}
                 onClick={() => {
-                  setCurrentContact(item.name)
+                  setCurrentContact(item)
                 }}
               >
                 <div className="mr-8" style={{ display: 'inline-flex' }}>
@@ -125,9 +142,7 @@ const ChartRecord: FC = () => {
                         fontSize: 12,
                         color: '#737373',
                       }}
-                    >
-                      {item.sendTime}
-                    </span>
+                    ></span>
                   </div>
                   <p
                     className="ellipsis"
@@ -136,7 +151,7 @@ const ChartRecord: FC = () => {
                       color: '#737373',
                     }}
                   >
-                    {item.content}
+                    {item.type === 'to' ? t('我') : item.name}:{item.content}
                   </p>
                 </div>
               </List.Item>
@@ -146,16 +161,23 @@ const ChartRecord: FC = () => {
       </div>
       <div
         className="flex-auto flexable --column"
-        style={{ backgroundColor: token.colorBgContainer }}
+        style={{
+          backgroundColor: token.colorBgContainer,
+          position: 'relative',
+        }}
       >
-        <TitleBar>
+        <TitleBar
+          avoidMargin={profilePanelVisible && profilePanelExpanded ? 128 : 0}
+          moreHolding={profilePanelVisible}
+          onMoreButtonClick={handleMoreButtonClick}
+        >
           <Title
             level={5}
             style={{
               marginBottom: 0,
             }}
           >
-            {currentContact}
+            {currentContact.name}
           </Title>
         </TitleBar>
         <div className="non-draggable flex-auto">
@@ -163,12 +185,62 @@ const ChartRecord: FC = () => {
             <List.Item></List.Item>
           </List>
         </div>
+        <ExtraDrawer
+          expanded={profilePanelExpanded}
+          visible={profilePanelVisible}
+          onClose={closeProfilePanel}
+          onExpandedChange={handleProfilePanelExpandedChange}
+        >
+          <article className="profile-panel">
+            <header className="flexable">
+              <Image
+                src={currentContact.avatar}
+                width={64}
+                height={64}
+                preview={false}
+                style={{ borderRadius: 4 }}
+              />
+              <div className="flex-auto ml-16">
+                <div className="flexable --cross-center">
+                  <Title
+                    level={4}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: 0,
+                    }}
+                  >
+                    {currentContact.name}
+                  </Title>
+                  <span className="ml-8" style={{ fontSize: 20 }}>
+                    {currentContact.gender ? (
+                      currentContact.gender === 'male' ? (
+                        currentContact.state === 'online' ? (
+                          <MaleOnlineMulti />
+                        ) : (
+                          <MaleOfflineMulti />
+                        )
+                      ) : currentContact.state === 'online' ? (
+                        <FemaleOnlineMulti />
+                      ) : (
+                        <FemaleOfflineMulti />
+                      )
+                    ) : null}
+                  </span>
+                  <span className="ml-8" style={{ fontSize: 20 }}>
+                    {currentContact.favorited ? <FavoriteMulti /> : null}
+                  </span>
+                </div>
+              </div>
+            </header>
+          </article>
+        </ExtraDrawer>
       </div>
-    </FlexableRow>
+    </StyledFlexableRow>
   )
 }
 
-export const meta = {
+export const routeMeta = {
   title: '聊天记录',
   name: 'Chat',
   index: true,
