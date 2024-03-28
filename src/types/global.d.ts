@@ -34,8 +34,10 @@ declare interface PageRouter extends PageMeta {
 }
 
 declare interface IContact {
+  userId?: string
   sendTime?: string
   name?: string
+  nickName?: string
   type?: string
   recordHistory?: stirng[]
   avatar?: string

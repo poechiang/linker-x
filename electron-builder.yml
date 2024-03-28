@@ -1,10 +1,10 @@
-appId: com.electron.app
-productName: electron-app
+appId: com.electron.linker-x
+productName: linker-x
 directories:
   buildResources: build
 files:
   - dist-electron
-  # - build
+  - build
   # - '!**/.vscode/*'
   # - '!electron/*'
   # - '!src/*'
@@ -28,6 +28,7 @@ mac:
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  icon: build/icon.png
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:

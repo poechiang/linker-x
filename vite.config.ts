@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => {
   const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG
   return {
     build: {
-      outDir: 'dist-electron/renderer',
+      outDir: 'dist-electron/',
     },
     resolve: {
       alias: {

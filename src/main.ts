@@ -22,10 +22,11 @@ i18n.use(initReactI18next).init({
   },
 })
 // render main window after app launched
-const init = await window.api?.winReady()
-i18n.changeLanguage(init.language || 'zhCN')
-const app = createElement(App, init)
+window.api?.winReady().then(init => {
+  i18n.changeLanguage(init.language || 'zhCN')
+  const app = createElement(App, init)
 
-const wrapper = document.querySelector('app-root-wrapper')
+  const wrapper = document.querySelector('app-root-wrapper')
 
-createRoot(wrapper!).render(app)
+  createRoot(wrapper!).render(app)
+})

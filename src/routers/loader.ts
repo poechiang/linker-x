@@ -31,9 +31,13 @@ export default () => {
           menu: false,
         }
       }
+
       return {
         path,
-        element: meta.lazy ? lazy(() => import(file)) : meta.element,
+
+        element: meta.lazy
+          ? lazy(() => import(/* @vite-ignore */ file))
+          : meta.element,
         ...meta,
       }
     })

@@ -22,16 +22,18 @@ const createWindow = (): void => {
     titleBarStyle: 'hidden',
     transparent: true,
     vibrancy: 'sidebar',
+    icon: resolve('build/icon.ico'),
 
     webPreferences: {
-      preload: resolve('dist-electron/preload.js'),
-      devTools: is.dev,
+      preload: resolve('./dist-electron/preload.js'),
+      devTools: true, //is.dev,
       sandbox: false,
     },
   })
 
   win.webContents.setWindowOpenHandler(details => {
     shell.openExternal(details.url)
+
     return { action: 'deny' }
   })
 
@@ -39,15 +41,15 @@ const createWindow = (): void => {
   if (is.dev && url) {
     win.loadURL(url)
   } else {
-    win.loadFile(resolve(process.env.INDEX || 'index.html'))
+    win.loadFile(resolve(process.env.INDEX || 'dist-electron/index.html'))
   }
   mainWindow = win
 }
 
 app.whenReady().then(() => {
   createWindow()
-
-  electronApp.setAppUserModelId('com.electron')
+  mainWindow.webContents.openDevTools()
+  electronApp.setAppUserModelId('com.electron.linker-x')
 })
 
 app.on('activate', function () {

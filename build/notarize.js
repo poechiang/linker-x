@@ -17,7 +17,7 @@ module.exports = async context => {
     return
   }
 
-  const appId = 'com.electron.app'
+  const appId = 'com.electron.linker-x'
 
   const { appOutDir } = context
 

@@ -34,10 +34,9 @@
   "author": "Jeff·Chiang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vkm0303/electron-template-react/issues"
+    "url": "https://github.com:poechiang/linker-x/issues"
   },
   "devDependencies": {
-    "@ant-design/icons": "^5.0.1",
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-conventional": "^17.4.4",
     "@electron-toolkit/tsconfig": "^1.0.1",
@@ -51,7 +50,6 @@
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^3.1.0",
     "cross-env": "^7.0.3",
-    "dotenv-flow": "^4.1.0",
     "electron": "^23.1.2",
     "electron-builder": "^23.6.0",
     "electron-devtools-installer": "^3.2.0",
@@ -88,6 +86,8 @@
     "i18next": "^23.10.1",
     "less": "^4.2.0",
     "lodash": "^4.17.21",
+    "dotenv-flow": "^4.1.0",
+    "@ant-design/icons": "^5.0.1",
     "react-i18next": "^14.1.0"
   }
 }

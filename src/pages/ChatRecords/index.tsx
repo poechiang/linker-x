@@ -231,6 +231,12 @@ const ChartRecord: FC = () => {
                     {currentContact.favorited ? <FavoriteMulti /> : null}
                   </span>
                 </div>
+                <div>
+                  {t('昵称')}:{currentContact.nickName}
+                </div>
+                <div>
+                  {t('领刻')}:{currentContact.userId}
+                </div>
               </div>
             </header>
           </article>
