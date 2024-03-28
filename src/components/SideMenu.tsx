@@ -121,7 +121,7 @@ export default () => {
       <Avatar
         shape="square"
         size={48}
-        src={'/me.jpeg'}
+        src={'me.jpeg'}
         style={{ marginBlock: 8 }}
       />
       <VibrancyMenu

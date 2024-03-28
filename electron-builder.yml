@@ -4,7 +4,8 @@ directories:
   buildResources: build
 files:
   - dist-electron
-  - build
+  - public
+  # - build
   # - '!**/.vscode/*'
   # - '!electron/*'
   # - '!src/*'

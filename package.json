@@ -3,7 +3,7 @@
   "productName": "Linker X",
   "version": "0.0.1",
   "description": "an online coordination and communication tool",
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/background.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write .",

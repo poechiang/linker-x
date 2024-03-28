@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import dotenvFlow from 'dotenv-flow'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
-import { resolve } from 'path'
+import { join, resolve } from 'path'
 
 const nodeEnvMap = {
   development: 'dev',
@@ -12,6 +12,10 @@ const nodeEnvMap = {
 dotenvFlow.config({
   node_env: nodeEnvMap[process.env.NODE_ENV || 'development'],
 })
+
+const preload = join(__dirname, './preload.js')
+const indexHtml = join(__dirname, './index.html')
+
 let mainWindow: BrowserWindow
 const createWindow = (): void => {
   const win = new BrowserWindow({
@@ -25,7 +29,7 @@ const createWindow = (): void => {
     icon: resolve('build/icon.ico'),
 
     webPreferences: {
-      preload: resolve('./dist-electron/preload.js'),
+      preload,
       devTools: true, //is.dev,
       sandbox: false,
     },
@@ -41,7 +45,7 @@ const createWindow = (): void => {
   if (is.dev && url) {
     win.loadURL(url)
   } else {
-    win.loadFile(resolve(process.env.INDEX || 'dist-electron/index.html'))
+    win.loadFile(indexHtml)
   }
   mainWindow = win
 }
