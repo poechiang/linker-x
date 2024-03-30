@@ -82,5 +82,6 @@ export const routeMeta = {
   name: 'ReadMe',
   icon: <ReadmeOutline />,
   element: <Readme />,
+  menu: false,
 }
 export default Readme

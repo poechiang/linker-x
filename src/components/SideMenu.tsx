@@ -1,18 +1,27 @@
 import { sideMenuItems } from '@/routers/navMenu'
 import {
   AppOutline,
+  DevToolsOutline,
   MobileOutline,
   ReadmeOutline,
   SettingsOutline,
+  UpdateCheckOutline,
 } from '@assets/icons'
-import { Avatar, GlobalToken, Menu, MenuProps, theme } from 'antd'
+import {
+  Avatar,
+  ConfigProvider,
+  GlobalToken,
+  Menu,
+  MenuProps,
+  theme,
+} from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 type MenuItem = MenuProps['items']
 
-const extraMenuItems: MenuItem = [
+const extraMenuItemsData: MenuItem = [
   {
     label: 'Navigation One',
     title: '',
@@ -27,52 +36,38 @@ const extraMenuItems: MenuItem = [
   },
   {
     label: 'Navigation Three - Submenu',
-    key: 'SubMenu',
-    icon: <SettingsOutline />,
+    key: 'settings',
+    icon: <SettingsOutline className="icon" />,
     children: [
       {
-        key: '/readme',
+        key: '/read-me',
         title: '',
         label: '自述',
         icon: <ReadmeOutline />,
       },
+
       {
-        type: 'group',
-        label: 'Item 1',
-        children: [
-          {
-            label: 'Option 1',
-            title: '',
-            key: 'setting:1',
-          },
-          {
-            label: 'Option 2',
-            title: '',
-            key: 'setting:2',
-          },
-        ],
+        label: '开发者工具',
+        title: '',
+        key: 'settings:devtools',
+        icon: <DevToolsOutline />,
       },
       {
-        type: 'group',
-        label: 'Item 2',
-        children: [
-          {
-            label: 'Option 3',
-            title: '',
-            key: 'setting:3',
-          },
-          {
-            label: 'Option 4',
-            title: '',
-            key: 'setting:4',
-          },
-        ],
+        type: 'divider',
+        key: 'settings:split1',
+      },
+      {
+        label: '检查更新',
+        title: '',
+        key: 'settings:update-check',
+        icon: <UpdateCheckOutline />,
       },
     ],
   },
 ]
 const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
   background-color: transparent;
+  border-color: transparent !important;
   .lnk-menu-item,
   .lnk-menu-submenu > .lnk-menu-submenu-title {
     padding: 0;
@@ -105,14 +100,39 @@ export default () => {
 
   // from routes
   const [routerMenuItems] = useState<MenuItem>(sideMenuItems)
+  const [extraMenuItems, setExtraMenuItems] =
+    useState<MenuItem>(extraMenuItemsData)
 
-  const onClick: MenuProps['onClick'] = e => {
+  const handleRouteMenuItemClick: MenuProps['onClick'] = e => {
     navigate(e.key)
+  }
+
+  const handleExtraMenuItemClick: MenuProps['onClick'] = e => {
+    if (e.key === 'settings:devtools') {
+      window.api?.openDevTools()
+    } else if (e.key === 'settings:update-check') {
+      const settingsMenuItem = extraMenuItems?.find(
+        item => item?.key === 'settings'
+      )
+      if (settingsMenuItem) {
+        ;(settingsMenuItem as any).icon = (
+          <SettingsOutline className="icon rotate" />
+        )
+
+        setExtraMenuItems([...extraMenuItems!])
+        setTimeout(() => {
+          ;(settingsMenuItem as any).icon = <SettingsOutline className="icon" />
+
+          setExtraMenuItems(extraMenuItems)
+        }, 10000)
+      }
+    } else if (e.key?.startsWith('/')) {
+      navigate(e.key)
+    }
   }
 
   // Listen the change of router
   useEffect(() => {
-    console.log('location', location)
     setSelectedKeys([location.pathname])
   }, [location])
 
@@ -126,7 +146,7 @@ export default () => {
       />
       <VibrancyMenu
         className="non-draggable"
-        onClick={onClick}
+        onClick={handleRouteMenuItemClick}
         mode="inline"
         selectedKeys={selectedKeys}
         items={routerMenuItems}
@@ -136,15 +156,26 @@ export default () => {
       />
       <span className="flex-auto"></span>
 
-      <VibrancyMenu
-        className="non-draggable"
-        onClick={onClick}
-        mode="inline"
-        items={extraMenuItems}
-        token={token}
-        inlineCollapsed={true}
-        style={{ width: 70 }}
-      />
+      <ConfigProvider
+        theme={{
+          components: {
+            Menu: {
+              colorSplit: token.colorSplit,
+            },
+          },
+        }}
+      >
+        <VibrancyMenu
+          className="non-draggable"
+          onClick={handleExtraMenuItemClick}
+          mode="inline"
+          items={extraMenuItems}
+          token={token}
+          inlineCollapsed={true}
+          selectable={false}
+          style={{ width: 70 }}
+        />
+      </ConfigProvider>
     </div>
   )
 }

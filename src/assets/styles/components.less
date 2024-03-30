@@ -75,3 +75,17 @@
 .lnk-menu-submenu {
   -webkit-app-region: no-drag;
 }
+
+// svg 旋转动画
+@keyframes linear-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+svg.icon.rotate {
+  animation: linear-rotate 5s linear infinite;
+}

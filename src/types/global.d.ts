@@ -1,12 +1,56 @@
 /// <reference types="@electron-toolkit/preload/dist"/>
 
+declare interface IpcRenderer {
+  on(
+    channel: string,
+    listener: (event: IpcRendererEvent, ...args: any[]) => void
+  ): this
+  once(
+    channel: string,
+    listener: (event: IpcRendererEvent, ...args: any[]) => void
+  ): this
+  removeAllListeners(channel: string): this
+  removeListener(channel: string, listener: (...args: any[]) => void): this
+  send(channel: string, ...args: any[]): void
+  invoke(channel: string, ...args: any[]): Promise<any>
+  postMessage(channel: string, message: any, transfer?: MessagePort[]): void
+  sendSync(channel: string, ...args: any[]): any
+  sendTo(webContentsId: number, channel: string, ...args: any[]): void
+  sendToHost(channel: string, ...args: any[]): void
+}
+
+declare interface IpcRendererEvent extends Event {
+  sender: IpcRenderer
+  senderId: number
+}
+
+declare interface NodeProcess {
+  readonly platform: string
+  readonly versions: {
+    [key: string]: string | undefined
+  }
+  readonly env: {
+    [key: string]: string | undefined
+  }
+}
+
+declare interface WebFrame {
+  insertCSS(css: string): string
+  setZoomFactor(factor: number): void
+  setZoomLevel(level: number): void
+}
 declare interface Window {
   electron?: ElectronAPI
 
-  api?: {
-    store: any
-    theme: any
-    winReady: (...args: []) => any
+  store: any
+  api: {
+    ipcRenderer: IpcRenderer
+    webFrame: WebFrame
+    process: NodeProcess
+    openFile?: (filePath: string) => Promise<any>
+    openExternal?: (url: string) => Promise<any>
+    openDevTools: () => Promise<any>
+    closeDevTools?: () => Promise<any>
   }
   listeners: Record<string, (callback?) => any | void>
 }

@@ -1,7 +1,7 @@
 import { MoreOutlined } from '@ant-design/icons'
 import {
   EnUsOutline,
-  MsgOutline,
+  RssOutline,
   SystemThemeLockedFill,
   SystemThemeUnlockFill,
   ZhCnOutline,
@@ -105,7 +105,9 @@ export default ({
   const { i18n } = useTranslation()
 
   const [flowSystemTheme, setFlowSystemTheme] = useState(false)
-  const [currentColoring, setCurrentColoring] = useState(app.coloring)
+  const [currentColoring, setCurrentColoring] = useState<string[]>([
+    app.coloring!,
+  ])
   const [menuItems, setMenuItems] = useState<MenuItems>([])
 
   const [selectedKey, setSelectedKey] = useState('zhCN')
@@ -139,9 +141,8 @@ export default ({
   )
   const handleThemeMenuClick = useCallback<MenuClickEventHandler>(
     e => {
-      setCurrentColoring(e.key as ThemeColor)
-      app.config({ coloring: e.key as ThemeColor })
-      window.api?.theme.toggle({ coloring: e.key as ThemeColor })
+      setCurrentColoring([e.key])
+      window.store.set('coloring', e.key as ThemeColor)
     },
     [app]
   )
@@ -193,7 +194,7 @@ export default ({
         onClick={handleClick}
       >
         <StyledBadge count={sysMsgs.length}>
-          <MsgOutline />
+          <RssOutline />
         </StyledBadge>
       </TitleBarButton>
       <Dropdown
@@ -202,7 +203,7 @@ export default ({
         arrow
         menu={{
           items: menuItems,
-          selectedKeys: [currentColoring!],
+          selectedKeys: currentColoring,
           onClick: handleThemeMenuClick,
         }}
         dropdownRender={menu => (
@@ -214,7 +215,7 @@ export default ({
               <span className="flex-auto" style={{ lineHeight: '26px' }}>
                 {t('深浅主题')}
               </span>
-              <ThemeSwitch />
+              <ThemeSwitch onCheckChange={() => setFlowSystemTheme(false)} />
             </div>
 
             <Divider style={{ margin: 0 }} />
@@ -228,7 +229,8 @@ export default ({
           type="text"
           style={{ color: token?.colorPrimary }}
           onClick={() => {
-            window.api?.theme.toggle({ theme: 'system' })
+            window.store.set('theme', 'system')
+            setFlowSystemTheme(true)
           }}
         >
           {flowSystemTheme ? (

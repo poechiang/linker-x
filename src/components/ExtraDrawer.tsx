@@ -27,6 +27,9 @@ export type ExtraDrawerProps = FCChildrenProps & {
 const StyledDrawer = styled.div<ExtraDrawerProps>`
   .lnk-drawer-content-wrapper {
     width: ${props => (props.expanded ? 100 : 50)}% !important;
+    @media (max-width: 976px) {
+      width: 100% !important;
+    }
     .lnk-drawer-header {
       border-bottom: none;
       padding: 8px 16px;

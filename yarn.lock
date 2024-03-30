@@ -945,6 +945,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jeffchi/logger@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@jeffchi/logger@npm:3.1.0"
+  peerDependencies:
+    date-fns: ^2.29.3
+  checksum: 4cdf896ce858f3f74f974e82a091f04f7ed8a92bcdf477dbd33c165d43ac113fa5a02b43760fc127fb206412e6bf038f1bcfb7545806b77c30c5343c1650c6aa
+  languageName: node
+  linkType: hard
+
 "@jridgewell/gen-mapping@npm:^0.1.0":
   version: 0.1.1
   resolution: "@jridgewell/gen-mapping@npm:0.1.1"
@@ -5400,6 +5409,7 @@ __metadata:
     "@electron-toolkit/tsconfig": "npm:^1.0.1"
     "@electron-toolkit/utils": "npm:^1.0.2"
     "@electron/notarize": "npm:^1.2.3"
+    "@jeffchi/logger": "npm:^3.1.0"
     "@poech/camel-hump-under": "npm:^1.1.0"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^18.14.6"

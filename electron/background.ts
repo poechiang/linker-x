@@ -1,4 +1,5 @@
-import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { electronApp, is } from '@electron-toolkit/utils'
+import { withTags } from '@jeffchi/logger'
 import dotenvFlow from 'dotenv-flow'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { join, resolve } from 'path'
@@ -19,9 +20,9 @@ const indexHtml = join(__dirname, './index.html')
 let mainWindow: BrowserWindow
 const createWindow = (): void => {
   const win = new BrowserWindow({
-    width: 900,
+    width: 1020,
     height: 670,
-    minWidth: 700,
+    minWidth: 820,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     transparent: true,
@@ -30,7 +31,7 @@ const createWindow = (): void => {
 
     webPreferences: {
       preload,
-      devTools: true, //is.dev,
+      devTools: true,
       sandbox: false,
     },
   })
@@ -52,7 +53,7 @@ const createWindow = (): void => {
 
 app.whenReady().then(() => {
   createWindow()
-  mainWindow.webContents.openDevTools()
+
   electronApp.setAppUserModelId('com.electron.linker-x')
 })
 
@@ -64,34 +65,47 @@ app.on('activate', function () {
 
 // F12 to open or close DevTools in development
 // and ignore CommandOrControl + R in production.
-app.on('browser-window-created', (_, window) => {
-  optimizer.watchWindowShortcuts(window, {
-    escToCloseWindow: false,
-    zoom: false,
-  })
-})
+// app.on('browser-window-created', (_, window) => {
+//   optimizer.watchWindowShortcuts(window, {
+//     escToCloseWindow: false,
+//     zoom: false,
+//   })
+// })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-let cache: Record<string, string> = {}
-// theme toggle
-ipcMain.on('theme:toggle', (_, { coloring, theme }) => {
-  theme && (nativeTheme.themeSource = theme)
-  coloring && (cache.coloring = coloring)
-})
-
-ipcMain.handle('win:ready', () => ({
+const storeCache: Record<string, string> = {
   theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-  coloring: cache.coloring || 'polar',
-}))
+  source: nativeTheme.themeSource,
+  coloring: 'polar',
+}
+
+const { log } = withTags('store')
+ipcMain.on('electron-store-get', (e, key: string) => {
+  log(`get ${key}`, storeCache[key])
+  e.returnValue = storeCache[key]
+})
+ipcMain.on('electron-store-set', (e, key: string, value: any) => {
+  log(`set ${key}`, value)
+  if (key === 'theme' && value) {
+    nativeTheme.themeSource = value
+    if (value === 'system') {
+      value = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+    }
+  }
+  storeCache[key] = value
+})
+ipcMain.handle('win:devtools', () => {
+  mainWindow?.webContents.openDevTools()
+})
 
 nativeTheme.on('updated', e => {
   mainWindow?.webContents.send('theme:updated', {
     theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-    coloring: cache.coloring || 'polar',
+    coloring: storeCache.coloring || 'polar',
     source: nativeTheme.themeSource,
   })
 })
