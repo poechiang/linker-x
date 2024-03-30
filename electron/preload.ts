@@ -10,17 +10,9 @@ const store = {
   },
 }
 
-const theme = {
-  toggle: (theme: 'dark' | 'light' | 'system') => {
-    ipcRenderer.send('theme:toggle', theme)
-  },
-}
-
 const api = {
-  store,
-  theme,
-
-  winReady: () => ipcRenderer.invoke('win:ready'),
+  ...electronAPI,
+  openDevTools: () => ipcRenderer.invoke('win:devtools'),
 }
 const listeners = {
   onThemeUpdated: callback =>
@@ -32,14 +24,14 @@ const listeners = {
 // expose to renderer if context isolation is enableUse otherwise to BOM global
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('store', store)
     contextBridge.exposeInMainWorld('listeners', listeners)
   } catch (error) {
     console.error(error)
   }
 } else {
-  window.electron = electronAPI
   window.api = api
+  window.store = store
   window.listeners = listeners
 }

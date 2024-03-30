@@ -66,7 +66,10 @@ const ThemeSwitchWrapper = styled.div<{
         : 'none'};
   }
 `
-export default () => {
+declare type ThemeSwitchProps = FCProps & {
+  onCheckChange?: (value: boolean) => void
+}
+export default (props: ThemeSwitchProps) => {
   const app = useApp()
   const [checked, setChecked] = useState(app.theme === 'dark')
   const { token } = useToken()
@@ -74,7 +77,8 @@ export default () => {
   const toggleSwitchCheck = () => {
     setChecked(!checked)
     const currentTheme = !checked ? 'dark' : 'light'
-    window.api?.theme.toggle({ theme: currentTheme })
+    props?.onCheckChange?.(!checked)
+    window.store.set('theme', currentTheme)
   }
 
   const themeUpdater = useCallback(({ theme }) => {
