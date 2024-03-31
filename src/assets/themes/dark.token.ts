@@ -1,9 +1,9 @@
 import { AliasToken } from 'antd/es/theme/interface'
 
 const commonToken: Partial<AliasToken> = {
-  colorTextBase: '#ffffff',
-  colorBgBase: '#000000',
-  colorBgContainer: '#141414',
+  colorBgLayout: '#141414',
+  colorBgContainer: '#212121',
+  colorBgElevated: '#2c2c2c',
 }
 const cyan: Partial<AliasToken> = {
   ...commonToken,

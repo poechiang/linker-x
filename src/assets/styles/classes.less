@@ -160,3 +160,14 @@ dl {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.scrollable {
+  overflow: auto;
+  &-x {
+    overflow: hidden;
+    overflow-x: auto;
+  }
+  &-y {
+    overflow: hidden;
+    overflow-y: auto;
+  }
+}

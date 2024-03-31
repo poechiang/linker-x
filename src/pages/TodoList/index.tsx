@@ -14,8 +14,8 @@ import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
 import { FC, useState } from 'react'
 
-import { StyledFlexableRow } from '@components/StyleComponnets'
 import { useTranslation } from 'react-i18next'
+import { StyledFlexableRow } from '~/src/components/styled-components/StyledFlexableRow'
 import mockData from '../ChatRecords/mockData.json'
 
 const { Title } = Typography

@@ -12,7 +12,7 @@ import styled from 'styled-components'
 
 export type ExtraDrawerProps = FCChildrenProps & {
   placement?: 'left' | 'top' | 'right' | 'bottom'
-
+  width?: string
   defaultVisible?: boolean
   defaultExpanded?: boolean
   defaultPinned?: boolean
@@ -25,8 +25,20 @@ export type ExtraDrawerProps = FCChildrenProps & {
   onPinnedChange?: (pinned: boolean) => void
 }
 const StyledDrawer = styled.div<ExtraDrawerProps>`
+  width: ${props =>
+    props?.visible && props?.pinned ? props?.width ?? '50%' : 0};
+  @media (max-width: 976px) {
+    width: 0;
+  }
+
+  .lnk-drawer-mask {
+    background: ${props => (props.pinned ? 'transparent' : '')};
+    pointer-events: ${props => (props.pinned ? 'none' : 'auto')};
+  }
   .lnk-drawer-content-wrapper {
-    width: ${props => (props.expanded ? 100 : 50)}% !important;
+    width: ${props =>
+      props.expanded ? '100%' : props?.width ?? '50%'} !important;
+    box-shadow: ${props => (props.pinned ? 'none' : '')};
     @media (max-width: 976px) {
       width: 100% !important;
     }
@@ -41,6 +53,7 @@ const ExtraDrawer: FC<ExtraDrawerProps> = ({
   visible: visibleProps,
   expanded: expandedProps,
   pinned: pinnedProps,
+  width,
   ...props
 }) => {
   const { token } = theme.useToken()
@@ -74,7 +87,10 @@ const ExtraDrawer: FC<ExtraDrawerProps> = ({
     visibleProps !== undefined && setVisible(visibleProps)
   }, [visibleProps])
   return (
-    <StyledDrawer expanded={expanded}>
+    <StyledDrawer
+      className="extra-drawer"
+      {...{ width, pinned, expanded, visible }}
+    >
       <Drawer
         title={
           <>

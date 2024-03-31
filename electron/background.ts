@@ -20,9 +20,9 @@ const indexHtml = join(__dirname, './index.html')
 let mainWindow: BrowserWindow
 const createWindow = (): void => {
   const win = new BrowserWindow({
-    width: 1020,
+    width: 1120,
     height: 670,
-    minWidth: 820,
+    minWidth: 1000,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     transparent: true,
