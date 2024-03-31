@@ -74,12 +74,33 @@ const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
     text-align: center;
     margin-inline: 8px;
     width: calc(100% - 16px);
+    color: ${props => props.token?.colorTextSecondary};
     & > .anticon,
     & > .lnk-menu-item-icon {
       display: inline-block;
       font-size: 24px;
       vertical-align: middle;
       line-height: 0;
+    }
+  }
+  .lnk-menu-item {
+    &-selected {
+      background-color: transparent;
+      color: ${props => props.token?.colorText};
+      &:before {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: ${props => props.token?.colorPrimary};
+        border-radius: 3px;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -3px);
+      }
+    }
+    &:hover {
+      background-color: ${props => props.token?.colorBgTextHover}!important;
     }
   }
   &.lnk-menu-inline-collapsed {
@@ -144,6 +165,7 @@ export default () => {
         src={'me.jpeg'}
         style={{ marginBlock: 8 }}
       />
+
       <VibrancyMenu
         className="non-draggable"
         onClick={handleRouteMenuItemClick}

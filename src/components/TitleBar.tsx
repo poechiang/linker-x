@@ -22,7 +22,7 @@ import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import { cloneElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { StyledFlexableRow } from './StyleComponnets'
+import { StyledFlexableRow } from './styled-components/StyledFlexableRow'
 import ThemeSwitch from './ThemeSwitch'
 
 declare type MenuItems = MenuProps['items']
@@ -37,7 +37,7 @@ export const TitleBarButton = styled(Button)<{
   width: 32px;
   pointer-events: auto;
   background-color: ${props =>
-    props.checked ? props.token?.colorBgMask ?? 'initial' : 'transparent'};
+    props.checked ? props.token?.colorBgTextActive : 'transparent'};
   color: ${props =>
     props.checked ? props.token?.colorText ?? 'initial' : 'initial'};
   .icon {
@@ -142,6 +142,8 @@ export default ({
   const handleThemeMenuClick = useCallback<MenuClickEventHandler>(
     e => {
       setCurrentColoring([e.key])
+
+      app.config({ coloring: e.key as ThemeColor })
       window.store.set('coloring', e.key as ThemeColor)
     },
     [app]

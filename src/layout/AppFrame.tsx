@@ -5,6 +5,7 @@ import { withTags } from '@jeffchi/logger'
 import { Spin } from 'antd'
 import { Suspense, useCallback, useEffect } from 'react'
 import { RouteObject, useRoutes } from 'react-router-dom'
+import { StyledFlexableRow } from '../components/styled-components'
 const { log } = withTags('appframe')
 export default () => {
   const app = useApp()
@@ -30,9 +31,13 @@ export default () => {
       <div className="flex-auto">
         <Suspense
           fallback={
-            <div className="flexable --main-center --cross-center full-height">
+            <StyledFlexableRow
+              height="100vh"
+              vertical="center"
+              horizontal="center"
+            >
               <Spin size="large" tip="Loading..." />
-            </div>
+            </StyledFlexableRow>
           }
         >
           {useRoutes(routeLoader() as RouteObject[])}
