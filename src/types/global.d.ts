@@ -56,6 +56,7 @@ declare interface Window {
 }
 
 declare type FCProps = {
+  className?: string
   classes?: Record<string, boolean>
   style?: React.CSSProperties
 }

@@ -6,7 +6,12 @@ export default () => {
   if (routers.length === 0) {
     let indexRouter
     const pageMetas = import.meta.glob(
-      ['@pages/**/*.tsx', '@pages/**/index.ts'],
+      [
+        '@pages/**/*.tsx',
+        '@pages/**/index.ts',
+        '!@pages/**/common/**/*.tsx',
+        '!@pages/**/common/**/index.ts',
+      ],
       {
         eager: true,
         import: 'routeMeta',

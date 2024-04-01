@@ -70,6 +70,21 @@ const StyledBadge = styled(Badge)`
     padding: 0 2px;
   }
 `
+const StyledTitleBar = styled(StyledFlexableRow)<
+  TitleBarProps & { token?: GlobalToken }
+>`
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  padding-inline: 16px;
+  border-bottom: ${props =>
+    props?.divider !== false ? '1px solid ' + props.token?.colorSplit : 'none'};
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100021;
+  width: 100%;
+`
 const localeMenuItems = [
   {
     key: 'zhCN',
@@ -111,7 +126,7 @@ export default ({
   const [menuItems, setMenuItems] = useState<MenuItems>([])
 
   const [selectedKey, setSelectedKey] = useState('zhCN')
-  const [sysMsgs, setSysMsgs] = useState<any>([])
+  const [rss, setRss] = useState<any>([])
   const { t } = useTranslation()
 
   const menuItemsConverter = useCallback(
@@ -166,20 +181,13 @@ export default ({
   }, [])
 
   const handleClick = useCallback(() => {
-    setSysMsgs([...sysMsgs, { id: random() }])
-  }, [sysMsgs])
+    setRss([...rss, { id: random() }])
+  }, [rss])
   return (
-    <StyledFlexableRow
+    <StyledTitleBar
       height="48px"
-      className="title-bar flexable --cross-center "
-      style={{
-        zIndex: 9999,
-        pointerEvents: 'none',
-        paddingInline: 16,
-        borderBottom:
-          divider !== false ? `1px solid ${token.colorSplit}` : 'none',
-        ...style,
-      }}
+      className="title-bar-wrapper"
+      {...{ style, divider, token }}
     >
       <div
         style={{
@@ -195,7 +203,7 @@ export default ({
         type="text"
         onClick={handleClick}
       >
-        <StyledBadge count={sysMsgs.length}>
+        <StyledBadge count={rss.length}>
           <RssOutline />
         </StyledBadge>
       </TitleBarButton>
@@ -265,6 +273,6 @@ export default ({
       >
         <MoreOutlined />
       </TitleBarButton>
-    </StyledFlexableRow>
+    </StyledTitleBar>
   )
 }
