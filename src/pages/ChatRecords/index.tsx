@@ -1,4 +1,3 @@
-import { UserAddOutlined, UserOutlined } from '@ant-design/icons'
 import {
   CallToOutline,
   ChatOutline,
@@ -29,11 +28,14 @@ import {
 import * as fns from 'date-fns'
 import { zhCN } from 'date-fns/locale/zh-CN'
 import { random } from 'lodash'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import SideList from '~/src/components/SideList'
 import { StyledFlexableColumn } from '~/src/components/styled-components'
 import { StyledFlexableRow } from '~/src/components/styled-components/StyledFlexableRow'
+import { nextTick } from '~/src/libs/nextTick'
+import ContactItem from './common/ContactItem'
 import mockData from './mockData.json'
 
 const { Title } = Typography
@@ -50,6 +52,7 @@ const StyledChatToolButton = styled(Button)`
 const StyledChatRecordList = styled.div<{ token: GlobalToken }>`
   background-color: ${({ token }) => token.colorBgLayout};
   overflow-y: auto;
+  height: 0;
   -webkit-app-region: no-drag;
   .lnk-list-item {
     display: flex;
@@ -119,10 +122,10 @@ const contactList: IContact[] = mockData.map(({ records, name }) => {
       content: lines,
     }
   })
-  const { sendTime, content, type } = recordHistory[0]
+  const { timestamp, content, type } = recordHistory[0]
 
   return {
-    sendTime,
+    timestamp,
     name,
     type,
     recordHistory: recordHistory.reverse(),
@@ -142,7 +145,13 @@ const ChartRecord: FC = () => {
   const [currentContact, setCurrentContact] = useState(contactList?.[0])
   const [profilePanelVisible, setProfilePanelVisible] = useState(false)
   const [profilePanelExpanded, setProfilePanelExpanded] = useState(false)
+  const [recordHistory, setRecordHistory] = useState<any[]>([])
   const [msg, setMsg] = useState('')
+  const lastRecordRef = useRef<HTMLParagraphElement>(null)
+  const textAreaRef = useRef<any>(null)
+  const scollBottom = useCallback(() => {
+    lastRecordRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [lastRecordRef])
   const closeProfilePanel = useCallback(() => setProfilePanelVisible(false), [])
   const handleMoreButtonClick = useCallback(
     () => setProfilePanelVisible(true),
@@ -153,95 +162,61 @@ const ChartRecord: FC = () => {
     (pinned: boolean) => setProfilePanelExpanded(pinned),
     []
   )
+  const handlePressEnter = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.metaKey) {
+        const textArea = textAreaRef.current?.resizableTextArea?.textArea
+        const { selectionStart, selectionEnd } = textArea
+        const newMsg = msg.split('')
+
+        newMsg.splice(selectionStart, selectionEnd - selectionStart, '\n')
+
+        setMsg(newMsg.join(''))
+        nextTick(() => {
+          textArea.selectionStart = selectionStart + 1
+          textArea.selectionEnd = selectionStart + 1
+        })
+        return
+      }
+
+      if (!e.altKey && !e.metaKey && !e.shiftKey) {
+        recordHistory?.push({
+          timestamp: Date.now(),
+          content: msg.split('\n'),
+          type: 'to',
+        })
+        setRecordHistory([...recordHistory])
+        setMsg('')
+        nextTick(scollBottom)
+      }
+    },
+    [msg, recordHistory]
+  )
   return (
     <StyledFlexableRow
       className="page-frame"
       height="100%"
       style={{ backgroundColor: token.colorBgLayout }}
     >
-      <StyledFlexableColumn
+      <SideList
         className="contact-list page-side"
-        style={{
-          backgroundColor: token.colorBgContainer,
-          width: 294,
-          minWidth: 294,
-        }}
-      >
-        <div
-          className="search-bar flexable non-draggable"
-          style={{ paddingInline: 16, paddingBlock: 8 }}
-        >
-          <Input
-            className="flex-auto mr-8"
-            placeholder="搜索"
-            prefix={<UserOutlined />}
+        width={294}
+        dataSource={contactList}
+        renderItem={(item: any) => (
+          <ContactItem
+            selected={item.name === currentContact?.name}
+            data={item}
+            latestMsg={{
+              timestamp: item.timestamp * 1000,
+              content: item.content,
+            }}
+            onClick={() => {
+              setCurrentContact(item)
+              setRecordHistory(item.recordHistory ?? [])
+            }}
           />
-          <Button>
-            <UserAddOutlined />
-          </Button>
-        </div>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorSplit: 'transparent',
-            },
-          }}
-        >
-          <List
-            className="flex-auto non-draggable"
-            itemLayout="horizontal"
-            dataSource={contactList}
-            style={{ overflowY: 'auto', height: 0 }}
-            renderItem={item => (
-              <List.Item
-                className={
-                  currentContact.name === item.name
-                    ? 'active flexable'
-                    : 'flexable'
-                }
-                style={{
-                  paddingInline: 16,
-                  backgroundColor:
-                    currentContact.name === item.name
-                      ? token.colorFillSecondary
-                      : 'transparent',
-                }}
-                onClick={() => {
-                  setCurrentContact(item)
-                }}
-              >
-                <div className="mr-8" style={{ display: 'inline-flex' }}>
-                  <Image
-                    style={{ borderRadius: 4 }}
-                    width={36}
-                    src={item.avatar}
-                  />
-                </div>
-                <div className="flex-auto" style={{ width: 0 }}>
-                  <div className="flexable">
-                    <span className="flex-auto ellipsis">{item.name}</span>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: '#737373',
-                      }}
-                    ></span>
-                  </div>
-                  <p
-                    className="ellipsis"
-                    style={{
-                      width: '100%',
-                      color: '#737373',
-                    }}
-                  >
-                    {item.type === 'to' ? t('我') : item.name}:{item.content}
-                  </p>
-                </div>
-              </List.Item>
-            )}
-          />
-        </ConfigProvider>
-      </StyledFlexableColumn>
+        )}
+      />
 
       <StyledFlexableRow
         className="page-bd flex-auto"
@@ -253,13 +228,6 @@ const ChartRecord: FC = () => {
           avoidMargin={profilePanelVisible && profilePanelExpanded ? 128 : 0}
           moreHolding={profilePanelVisible}
           onMoreButtonClick={handleMoreButtonClick}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            zIndex: 100021,
-            width: '100%',
-          }}
         >
           <Title
             level={5}
@@ -282,19 +250,25 @@ const ChartRecord: FC = () => {
               className="record-wrap flex-auto mt-48"
               token={token}
             >
-              {currentContact.recordHistory?.map((r, i) => (
-                <List.Item className={r.type === 'to' ? 'reverse' : ''} key={i}>
+              {recordHistory?.map((r, iR) => (
+                <List.Item
+                  className={r.type === 'to' ? 'reverse' : ''}
+                  key={iR}
+                >
                   <Avatar
                     shape="square"
                     src={r.type === 'from' ? currentContact.avatar : 'me.jpeg'}
                   />
-                  <div className="chat-record-bubble">
-                    {r.content.map((l, x) => (
-                      <p key={x}>{l}</p>
+                  <div className="chat-record-bubble selectable">
+                    {r.content.map((l, iL) => (
+                      <p key={iL}>{l}</p>
                     ))}
                   </div>
                 </List.Item>
               ))}
+              <List.Item>
+                <p ref={lastRecordRef}></p>
+              </List.Item>
             </StyledChatRecordList>
           </ConfigProvider>
           <Divider style={{ marginTop: 0, marginBottom: 4 }} />
@@ -333,9 +307,11 @@ const ChartRecord: FC = () => {
             <TextArea
               className=" non-draggable"
               value={msg}
+              ref={textAreaRef}
               onChange={e => setMsg(e.target.value)}
               autoSize={{ minRows: 5, maxRows: 10 }}
               style={{ boxShadow: 'none' }}
+              onPressEnter={handlePressEnter}
             />
           </ConfigProvider>
         </StyledFlexableColumn>

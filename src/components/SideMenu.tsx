@@ -174,7 +174,7 @@ export default () => {
         items={routerMenuItems}
         token={token}
         inlineCollapsed={true}
-        style={{ width: 70 }}
+        style={{ width: 64 }}
       />
       <span className="flex-auto"></span>
 
@@ -195,7 +195,7 @@ export default () => {
           token={token}
           inlineCollapsed={true}
           selectable={false}
-          style={{ width: 70 }}
+          style={{ width: 64 }}
         />
       </ConfigProvider>
     </div>
