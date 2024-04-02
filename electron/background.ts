@@ -2,16 +2,24 @@ import { electronApp, is } from '@electron-toolkit/utils'
 import { withTags } from '@jeffchi/logger'
 import dotenvFlow from 'dotenv-flow'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
+import Store from 'electron-store'
+import { debounce } from 'lodash'
 import { join, resolve } from 'path'
 
-const nodeEnvMap = {
-  development: 'dev',
-  production: 'prod',
-  test: 'test',
-}
+const store = new Store({
+  defaults: {
+    theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+    followSystem: nativeTheme.themeSource === 'system',
+    coloring: 'polar',
+  },
+})
 
 dotenvFlow.config({
-  node_env: nodeEnvMap[process.env.NODE_ENV || 'development'],
+  node_env: {
+    development: 'dev',
+    production: 'prod',
+    test: 'test',
+  }[process.env.NODE_ENV || 'development'],
 })
 
 const preload = join(__dirname, './preload.js')
@@ -77,18 +85,15 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-const storeCache: Record<string, string> = {
-  theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-  source: nativeTheme.themeSource,
-  coloring: 'polar',
-}
 
 const { log } = withTags('store')
-ipcMain.on('electron-store-get', (e, key: string) => {
-  log(`get ${key}`, storeCache[key])
-  e.returnValue = storeCache[key]
+
+ipcMain.on('store:read', (e, key: string) => {
+  const value = store.get(key)
+  log(`get ${key}`, value)
+  e.returnValue = value
 })
-ipcMain.on('electron-store-set', (e, key: string, value: any) => {
+ipcMain.on('store:write', (e, key: string, value: any) => {
   log(`set ${key}`, value)
   if (key === 'theme' && value) {
     nativeTheme.themeSource = value
@@ -96,16 +101,24 @@ ipcMain.on('electron-store-set', (e, key: string, value: any) => {
       value = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
     }
   }
-  storeCache[key] = value
+  store.set(key, value)
 })
+
+const storeChangeHandler = debounce(() => {
+  mainWindow?.webContents.send('theme:updated', {
+    theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+    coloring: store.get<string>('coloring'),
+    followSystem: nativeTheme.themeSource,
+  })
+}, 100)
+store.onDidChange('theme', storeChangeHandler)
+store.onDidChange('followSystem', storeChangeHandler)
+
 ipcMain.handle('win:devtools', () => {
   mainWindow?.webContents.openDevTools()
 })
 
-nativeTheme.on('updated', e => {
-  mainWindow?.webContents.send('theme:updated', {
-    theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-    coloring: storeCache.coloring || 'polar',
-    source: nativeTheme.themeSource,
-  })
+nativeTheme.on('updated', () => {
+  store.set('theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
+  store.set('followSystem', nativeTheme.themeSource === 'system')
 })

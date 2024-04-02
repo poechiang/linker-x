@@ -170,8 +170,8 @@ export default ({
     )
   }, [menuItemsConverter, t])
 
-  const themeUpdater = useCallback(({ source }) => {
-    setFlowSystemTheme(source === 'system')
+  const themeUpdater = useCallback(({ followSystem }) => {
+    setFlowSystemTheme(followSystem)
   }, [])
   useEffect(() => {
     window.listeners.onThemeUpdated(themeUpdater)

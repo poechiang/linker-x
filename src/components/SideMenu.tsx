@@ -5,7 +5,7 @@ import {
   MobileOutline,
   ReadmeOutline,
   SettingsOutline,
-  UpdateCheckOutline,
+  UpdateCheckOutline
 } from '@assets/icons'
 import {
   Avatar,
@@ -13,7 +13,7 @@ import {
   GlobalToken,
   Menu,
   MenuProps,
-  theme,
+  theme
 } from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -84,7 +84,7 @@ const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
     }
   }
   .lnk-menu-item {
-    &-selected {
+        &-selected {
       background-color: transparent;
       color: ${props => props.token?.colorText};
       &:before {

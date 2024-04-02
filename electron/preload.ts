@@ -3,10 +3,10 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 const store = {
   get(key: string) {
-    return ipcRenderer.sendSync('electron-store-get', key)
+    return ipcRenderer.sendSync('store:read', key)
   },
   set(property: string, val) {
-    ipcRenderer.send('electron-store-set', property, val)
+    ipcRenderer.send('store:write', property, val)
   },
 }
 
