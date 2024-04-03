@@ -1,11 +1,12 @@
-import { sideMenuItems } from '@/routers/navMenu'
 import {
   AppOutline,
+  ChatOutline,
   DevToolsOutline,
   MobileOutline,
   ReadmeOutline,
   SettingsOutline,
-  UpdateCheckOutline
+  TodoOutline,
+  UpdateCheckOutline,
 } from '@assets/icons'
 import {
   Avatar,
@@ -13,14 +14,25 @@ import {
   GlobalToken,
   Menu,
   MenuProps,
-  theme
+  theme,
 } from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 type MenuItem = MenuProps['items']
-
+const sideMenuItems: MenuItem = [
+  {
+    key: '/app/chat-records',
+    label: '聊天记录',
+    icon: <ChatOutline />,
+  },
+  {
+    key: '/app/to-do',
+    title: '待办事项',
+    icon: <TodoOutline />,
+  },
+]
 const extraMenuItemsData: MenuItem = [
   {
     label: 'Navigation One',
@@ -40,7 +52,7 @@ const extraMenuItemsData: MenuItem = [
     icon: <SettingsOutline className="icon" />,
     children: [
       {
-        key: '/read-me',
+        key: '/app/read-me',
         title: '',
         label: '自述',
         icon: <ReadmeOutline />,
@@ -84,7 +96,7 @@ const VibrancyMenu = styled(Menu)<{ token?: GlobalToken }>`
     }
   }
   .lnk-menu-item {
-        &-selected {
+    &-selected {
       background-color: transparent;
       color: ${props => props.token?.colorText};
       &:before {

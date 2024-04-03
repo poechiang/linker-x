@@ -1,11 +1,10 @@
 import '@assets/styles/index.less'
 import AppProvider from '@components/AppProvider'
-import AppFrame from '@layout/AppFrame'
+import AppFrame from '@pages/app'
 import useMessage from 'antd/es/message/useMessage'
 import useModal from 'antd/es/modal/useModal'
 import useNotification from 'antd/es/notification/useNotification'
-import { HashRouter } from 'react-router-dom'
-
+import { BrowserRouter } from 'react-router-dom'
 export default () => {
   const [_1, messageHolder] = useMessage()
   const [_2, notificationHolder] = useNotification()
@@ -19,9 +18,9 @@ export default () => {
       {notificationHolder}
       {modalHolder}
 
-      <HashRouter>
+      <BrowserRouter>
         <AppFrame />
-      </HashRouter>
+      </BrowserRouter>
     </AppProvider>
   )
 }

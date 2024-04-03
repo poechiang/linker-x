@@ -1,11 +1,11 @@
-import routeLoader from '@/routers/loader'
 import SideMenu from '@components/SideMenu'
+import { StyledFlexableRow } from '@components/styled-components'
 import { useApp } from '@hooks/useApp'
 import { withTags } from '@jeffchi/logger'
+import { routeLoader } from '@routers/index'
 import { Spin } from 'antd'
 import { Suspense, useCallback, useEffect } from 'react'
 import { RouteObject, useRoutes } from 'react-router-dom'
-import { StyledFlexableRow } from '../components/styled-components'
 const { log } = withTags('appframe')
 export default () => {
   const app = useApp()

@@ -1,6 +1,5 @@
 import {
   CallToOutline,
-  ChatOutline,
   EmojiOutline,
   FavoriteMulti,
   FemaleOfflineMulti,
@@ -377,11 +376,4 @@ const ChartRecord: FC = () => {
   )
 }
 
-export const routeMeta = {
-  title: '聊天记录',
-  name: 'Chat',
-  index: true,
-  icon: <ChatOutline />,
-  element: <ChartRecord />,
-}
 export default ChartRecord

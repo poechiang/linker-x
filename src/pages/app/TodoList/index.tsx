@@ -1,5 +1,4 @@
 import { UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import { TodoOutline } from '@assets/icons'
 import TitleBar from '@components/TitleBar'
 import {
   Button,
@@ -164,10 +163,4 @@ const Todo: FC = () => {
   )
 }
 
-export const routeMeta = {
-  title: '待办事项',
-  name: 'Todo',
-  icon: <TodoOutline />,
-  element: <Todo />,
-}
 export default Todo

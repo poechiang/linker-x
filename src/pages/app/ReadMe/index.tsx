@@ -1,8 +1,8 @@
 import { Avatar, Divider, Space, Typography } from 'antd'
 import { FC } from 'react'
 import styled from 'styled-components'
-import { ReadmeOutline } from '../assets/icons'
-import TitleBar from '../components/TitleBar'
+import { ReadmeOutline } from '../../../assets/icons'
+import TitleBar from '../../../components/TitleBar'
 
 const { Title, Paragraph, Text } = Typography
 
