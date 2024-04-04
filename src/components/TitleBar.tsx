@@ -38,8 +38,7 @@ export const TitleBarButton = styled(Button)<{
   pointer-events: auto;
   background-color: ${props =>
     props.checked ? props.token?.colorBgTextActive : 'transparent'};
-  color: ${props =>
-    props.checked ? props.token?.colorText ?? 'initial' : 'initial'};
+  color: ${props => props.token?.colorText};
   .icon {
     display: inline-flex;
     align-items: center;
@@ -119,7 +118,7 @@ export default ({
   const { token } = theme.useToken()
   const { i18n } = useTranslation()
 
-  const [flowSystemTheme, setFlowSystemTheme] = useState(false)
+  const [followSystemTheme, setFollowSystemTheme] = useState(false)
   const [currentColoring, setCurrentColoring] = useState<string[]>([
     app.coloring!,
   ])
@@ -171,9 +170,10 @@ export default ({
   }, [menuItemsConverter, t])
 
   const themeUpdater = useCallback(({ followSystem }) => {
-    setFlowSystemTheme(followSystem)
+    setFollowSystemTheme(followSystem)
   }, [])
   useEffect(() => {
+    setFollowSystemTheme(window.store.get('followSystem'))
     window.listeners.onThemeUpdated(themeUpdater)
     return () => {
       window.listeners.offThemeUpdated(themeUpdater)
@@ -225,7 +225,7 @@ export default ({
               <span className="flex-auto" style={{ lineHeight: '26px' }}>
                 {t('深浅主题')}
               </span>
-              <ThemeSwitch onCheckChange={() => setFlowSystemTheme(false)} />
+              <ThemeSwitch onCheckChange={() => setFollowSystemTheme(false)} />
             </div>
 
             <Divider style={{ margin: 0 }} />
@@ -240,10 +240,10 @@ export default ({
           style={{ color: token?.colorPrimary }}
           onClick={() => {
             window.store.set('theme', 'system')
-            setFlowSystemTheme(true)
+            setFollowSystemTheme(true)
           }}
         >
-          {flowSystemTheme ? (
+          {followSystemTheme ? (
             <SystemThemeLockedFill />
           ) : (
             <SystemThemeUnlockFill />

@@ -1,14 +1,19 @@
 import '@assets/styles/index.less'
 import AppProvider from '@components/AppProvider'
-import AppFrame from '@pages/app'
+// import PageFrame from '@pages/PageFrame'
 import useMessage from 'antd/es/message/useMessage'
 import useModal from 'antd/es/modal/useModal'
 import useNotification from 'antd/es/notification/useNotification'
-import { BrowserRouter } from 'react-router-dom'
+import {
+  /*BrowserRouter*/ createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom'
+import { routers } from './routers'
 export default () => {
   const [_1, messageHolder] = useMessage()
   const [_2, notificationHolder] = useNotification()
   const [_3, modalHolder] = useModal()
+  const router = createBrowserRouter(routers)
   return (
     <AppProvider
       theme={window.store.get('theme')}
@@ -17,10 +22,10 @@ export default () => {
       {messageHolder}
       {notificationHolder}
       {modalHolder}
-
-      <BrowserRouter>
-        <AppFrame />
-      </BrowserRouter>
+      <RouterProvider router={router} />
+      {/* <BrowserRouter>
+        <PageFrame />
+      </BrowserRouter> */}
     </AppProvider>
   )
 }

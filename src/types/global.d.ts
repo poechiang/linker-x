@@ -71,10 +71,11 @@ declare interface PageMeta {
   title?: string
   icon?: React.ReactNode
   lazy?: boolean
-  element?: React.ReactNode
+  default?: any
+  menu?: any
 }
 declare interface PageRouter extends PageMeta {
-  path: string
+  path?: string
   menu?: boolean
 }
 

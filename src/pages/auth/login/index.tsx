@@ -1,8 +1,7 @@
+import TitleBar from '@components/TitleBar'
 import { Avatar, Divider, Space, Typography } from 'antd'
 import { FC } from 'react'
 import styled from 'styled-components'
-import { ReadmeOutline } from '../../../assets/icons'
-import TitleBar from '../../../components/TitleBar'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -16,7 +15,7 @@ const CodeBlock = styled.pre`
   background: #282c34 !important;
 `
 
-const Readme: FC = () => (
+const Login: FC = () => (
   <>
     <TitleBar
       divider={false}
@@ -29,21 +28,21 @@ const Readme: FC = () => (
           <Space size="middle">
             <Div>
               <Avatar
-                src={<img src="electron-logo.svg" alt="avatar" />}
+                src={<img src="/electron-logo.svg" alt="avatar" />}
                 size="small"
               />
               <Text strong>Electron</Text>
             </Div>
             <Div>
               <Avatar
-                src={<img src="vite-logo.svg" alt="avatar" />}
+                src={<img src="/vite-logo.svg" alt="avatar" />}
                 size="small"
               />
               <Text strong>Vite</Text>
             </Div>
             <Div>
               <Avatar
-                src={<img src="react-logo.svg" alt="avatar" />}
+                src={<img src="/react-logo.svg" alt="avatar" />}
                 size="small"
               />
               <Text strong>React</Text>
@@ -77,11 +76,4 @@ const Readme: FC = () => (
   </>
 )
 
-export const routeMeta = {
-  title: '待办事项',
-  name: 'ReadMe',
-  icon: <ReadmeOutline />,
-  element: <Readme />,
-  menu: false,
-}
-export default Readme
+export default Login

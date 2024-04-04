@@ -1,11 +1,8 @@
 import {
   AppOutline,
-  ChatOutline,
   DevToolsOutline,
   MobileOutline,
-  ReadmeOutline,
   SettingsOutline,
-  TodoOutline,
   UpdateCheckOutline,
 } from '@assets/icons'
 import {
@@ -19,20 +16,10 @@ import {
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { settingMenus, sideMenus } from '../routers'
 
 type MenuItem = MenuProps['items']
-const sideMenuItems: MenuItem = [
-  {
-    key: '/app/chat-records',
-    label: '聊天记录',
-    icon: <ChatOutline />,
-  },
-  {
-    key: '/app/to-do',
-    title: '待办事项',
-    icon: <TodoOutline />,
-  },
-]
+
 const extraMenuItemsData: MenuItem = [
   {
     label: 'Navigation One',
@@ -47,26 +34,18 @@ const extraMenuItemsData: MenuItem = [
     icon: <MobileOutline />,
   },
   {
-    label: 'Navigation Three - Submenu',
     key: 'settings',
     icon: <SettingsOutline className="icon" />,
     children: [
       {
-        key: '/app/read-me',
-        title: '',
-        label: '自述',
-        icon: <ReadmeOutline />,
+        type: 'divider',
+        key: 'settings:split1',
       },
-
       {
         label: '开发者工具',
         title: '',
         key: 'settings:devtools',
         icon: <DevToolsOutline />,
-      },
-      {
-        type: 'divider',
-        key: 'settings:split1',
       },
       {
         label: '检查更新',
@@ -132,7 +111,7 @@ export default () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
 
   // from routes
-  const [routerMenuItems] = useState<MenuItem>(sideMenuItems)
+  const [routerMenuItems] = useState<MenuItem>(sideMenus)
   const [extraMenuItems, setExtraMenuItems] =
     useState<MenuItem>(extraMenuItemsData)
 
@@ -168,13 +147,24 @@ export default () => {
   useEffect(() => {
     setSelectedKeys([location.pathname])
   }, [location])
+  useEffect(() => {
+    const settingsMenuItem = extraMenuItems?.find(
+      item => item?.key === 'settings'
+    )
+
+    if (settingsMenuItem) {
+      ;(settingsMenuItem as any).children.unshift(...settingMenus)
+    }
+
+    setExtraMenuItems([...extraMenuItems!])
+  }, [])
 
   return (
     <div className="flexable --column --cross-center full-parent">
       <Avatar
         shape="square"
         size={48}
-        src={'me.jpeg'}
+        src={'/me.jpeg'}
         style={{ marginBlock: 8 }}
       />
 

@@ -1,62 +1,82 @@
+import ErrorBoundary from '@components/ErrorBoundary'
+import { withTags } from '@jeffchi/logger'
 import { createElement, lazy } from 'react'
 import { Navigate } from 'react-router-dom'
+const { log } = withTags('router')
 
-const routers: PageRouter[] = []
+const pages = import.meta.glob(['@pages/**/index.tsx'], {
+  eager: true,
+}) as Record<string, PageMeta>
 
-export const routeLoader = (idnex: string, replace?: boolean) => {
-  if (routers.length === 0) {
-    const pages = import.meta.glob(
-      ['@pages/**/index.tsx', '!@pages/**/common/**/index.tsx'],
-      {
-        eager: true,
-        import: 'default',
-      }
-    ) as Record<string, PageMeta>
-
-    const routes = Object.entries(pages).map(([file]) => {
-      const paths = file
-        .replace(/\/src\/pages\/(.+)\/index\.tsx$/, '$1')
-        .split('/')
-        .map(f =>
-          f.replace(/[A-Z]/g, (l, i) => (i ? '-' : '') + l.toLowerCase())
-        )
-      const Page = lazy(() => import(/* @vite-ignore */ file))
-      return {
-        paths: paths.map((p, i) => `${!i ? '/' : ''}${p}`),
-        path: paths.join('/'),
-        element: createElement(Page),
-      }
-    })
-
-    const build = (list, r) => {
-      const path = r?.paths.shift()
-      const currentNode = list.find(x => x.path === path)
-
-      if (r?.paths.length) {
-        const children = build(currentNode?.children ?? [], r)
-        if (currentNode) {
-          currentNode.path = `${path}/*`
-        } else {
-          list.push({ path: `${path}/*`, children })
-        }
-      } else if (currentNode) {
-        currentNode.element = r.element //route.element
-      } else {
-        list.push({ path, element: r.element })
-      }
-
-      return list
-    }
-    routers.push(
-      {
-        path: '',
-        element: createElement(Navigate, {
-          replace: true,
-          to: '/app/chat-records',
-        }),
-      },
-      ...routes.reduce(build, [])
+const routes = Object.entries(pages).map(([file, m]) => {
+  const path = file.replace(/^\/src\/pages/, '').replace(/\/index\.tsx$/, '')
+  const paths = path
+    .split('/')
+    .map(
+      f =>
+        f.replace(/[A-Z]/g, (l, i) => (i ? '-' : '') + l.toLowerCase()) || '/'
     )
+
+  const Page =
+    m.lazy !== false ? lazy(() => import(/* @vite-ignore */ file)) : m.default
+
+  return { file, paths, path, element: createElement(Page), menu: m?.menu }
+})
+const routerBuilder = (list, r) => {
+  const [path, ...paths] = r.paths
+  let currentNode = list.find(x => x.path === path)
+
+  if (!currentNode) {
+    currentNode = { path }
+    list.push(currentNode)
   }
-  return routers
+
+  if (paths.length) {
+    currentNode.children = routerBuilder(currentNode?.children ?? [], {
+      ...r,
+      paths,
+    })
+  } else {
+    // currentNode.ErrorBoundary = ErrorBoundary
+    currentNode.errorElement = createElement(ErrorBoundary)
+    currentNode.element = r.element
+  }
+
+  return list
 }
+
+const menuBuilder = (list, r) => {
+  if (!r.menu) {
+    return list
+  }
+  return [
+    ...list,
+    {
+      key: r.path,
+      ...r.menu,
+    },
+  ]
+}
+
+const routers = routes.reduce(routerBuilder, [])
+
+routers[0].children.unshift({
+  index: true,
+  element: createElement(Navigate, {
+    replace: true,
+    to: '/app/chats',
+  }),
+})
+
+log('routers:', routers)
+
+const menus = routes.reduce(menuBuilder, [])
+
+const sideMenus = menus
+  .filter(m => !m.type || m.type === 'side')
+  .map(({ type, ...m }) => m)
+
+const settingMenus = menus
+  .filter(m => m.type === 'settings')
+  .map(({ type, ...m }) => m)
+export { routers, sideMenus, settingMenus }

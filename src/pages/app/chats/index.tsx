@@ -1,5 +1,6 @@
 import {
   CallToOutline,
+  ChatOutline,
   EmojiOutline,
   FavoriteMulti,
   FemaleOfflineMulti,
@@ -376,4 +377,8 @@ const ChartRecord: FC = () => {
   )
 }
 
+export const menu = {
+  label: '聊天记录',
+  icon: <ChatOutline />,
+}
 export default ChartRecord

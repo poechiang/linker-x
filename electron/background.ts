@@ -1,5 +1,6 @@
 import { electronApp, is } from '@electron-toolkit/utils'
 import { withTags } from '@jeffchi/logger'
+import { format } from 'date-fns'
 import dotenvFlow from 'dotenv-flow'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import Store from 'electron-store'
@@ -62,6 +63,8 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
   createWindow()
 
+  log('init store theme:', store.get('theme'))
+  nativeTheme.themeSource = store.get('theme') as 'dark' | 'light' | 'system'
   electronApp.setAppUserModelId('com.electron.linker-x')
 })
 
@@ -86,8 +89,16 @@ app.on('window-all-closed', () => {
   }
 })
 
-const { log } = withTags('store')
-
+console.log(process.env['HOME'])
+const { log } = withTags('store', {
+  output: join(
+    process.env['HOME']!,
+    'Library',
+    'Application Support',
+    'Linker-X',
+    `logs/${format(Date.now(), 'yyyy-MM-dd')}.log`
+  ),
+})
 ipcMain.on('store:read', (e, key: string) => {
   const value = store.get(key)
   log(`get ${key}`, value)
@@ -108,7 +119,7 @@ const storeChangeHandler = debounce(() => {
   mainWindow?.webContents.send('theme:updated', {
     theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
     coloring: store.get<string>('coloring'),
-    followSystem: nativeTheme.themeSource,
+    followSystem: nativeTheme.themeSource === 'system',
   })
 }, 100)
 store.onDidChange('theme', storeChangeHandler)
