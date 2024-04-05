@@ -17,8 +17,7 @@ const routes = Object.entries(pages).map(([file, m]) => {
         f.replace(/[A-Z]/g, (l, i) => (i ? '-' : '') + l.toLowerCase()) || '/'
     )
 
-  const Page =
-    m.lazy !== false ? lazy(() => import(/* @vite-ignore */ file)) : m.default
+  const Page = m.lazy ? lazy(() => import(/* @vite-ignore */ file)) : m.default
 
   return { file, paths, path, element: createElement(Page), menu: m?.menu }
 })

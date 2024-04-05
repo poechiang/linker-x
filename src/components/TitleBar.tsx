@@ -239,7 +239,7 @@ export default ({
           type="text"
           style={{ color: token?.colorPrimary }}
           onClick={() => {
-            window.store.set('theme', 'system')
+            window.store.set('followSystem', true)
             setFollowSystemTheme(true)
           }}
         >

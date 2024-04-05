@@ -16,7 +16,7 @@ asarUnpack:
   - resources/*
 afterSign: build/notarize.js
 win:
-  executableName: electron-app
+  executableName: linker-x
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

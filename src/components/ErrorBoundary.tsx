@@ -7,6 +7,7 @@ import TitleBar from './TitleBar'
 const { Title, Paragraph, Text, Link } = Typography
 const StyledContainer = styled.div<{ token?: GlobalToken }>`
   height: 100vh;
+  width: 100%;
   padding: 24px;
   .lnk-typography {
     h1 {

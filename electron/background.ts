@@ -7,20 +7,20 @@ import Store from 'electron-store'
 import { debounce } from 'lodash'
 import { join, resolve } from 'path'
 
-const store = new Store({
-  defaults: {
-    theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-    followSystem: nativeTheme.themeSource === 'system',
-    coloring: 'polar',
-  },
-})
-
 dotenvFlow.config({
   node_env: {
     development: 'dev',
     production: 'prod',
     test: 'test',
   }[process.env.NODE_ENV || 'development'],
+})
+
+const store = new Store({
+  defaults: {
+    theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+    followSystem: nativeTheme.themeSource === 'system',
+    coloring: 'polar',
+  },
 })
 
 const preload = join(__dirname, './preload.js')
@@ -64,7 +64,15 @@ app.whenReady().then(() => {
   createWindow()
 
   log('init store theme:', store.get('theme'))
-  nativeTheme.themeSource = store.get('theme') as 'dark' | 'light' | 'system'
+  const followSystem = store.get('followSystem')
+  nativeTheme.themeSource = followSystem
+    ? 'system'
+    : (store.get('theme') as 'dark' | 'light')
+
+  store.set('app', {
+    name: app.getName(),
+    version: app.getVersion(),
+  })
   electronApp.setAppUserModelId('com.electron.linker-x')
 })
 
@@ -89,16 +97,20 @@ app.on('window-all-closed', () => {
   }
 })
 
-console.log(process.env['HOME'])
-const { log } = withTags('store', {
-  output: join(
-    process.env['HOME']!,
-    'Library',
-    'Application Support',
-    'Linker-X',
-    `logs/${format(Date.now(), 'yyyy-MM-dd')}.log`
-  ),
-})
+const { log } = withTags(
+  'store',
+  !is.dev
+    ? {
+        output: join(
+          process.env['HOME']!,
+          'Library',
+          'Application Support',
+          'Linker-X',
+          `logs/${format(Date.now(), 'yyyy-MM-dd')}.log`
+        ),
+      }
+    : void 0
+)
 ipcMain.on('store:read', (e, key: string) => {
   const value = store.get(key)
   log(`get ${key}`, value)
@@ -111,6 +123,10 @@ ipcMain.on('store:write', (e, key: string, value: any) => {
     if (value === 'system') {
       value = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
     }
+    store.set('followSystem', value === 'system')
+  }
+  if (key === 'followSystem' && value) {
+    nativeTheme.themeSource = 'system'
   }
   store.set(key, value)
 })
@@ -119,7 +135,7 @@ const storeChangeHandler = debounce(() => {
   mainWindow?.webContents.send('theme:updated', {
     theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
     coloring: store.get<string>('coloring'),
-    followSystem: nativeTheme.themeSource === 'system',
+    followSystem: store.get('followSystem'),
   })
 }, 100)
 store.onDidChange('theme', storeChangeHandler)
@@ -131,5 +147,4 @@ ipcMain.handle('win:devtools', () => {
 
 nativeTheme.on('updated', () => {
   store.set('theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
-  store.set('followSystem', nativeTheme.themeSource === 'system')
 })
